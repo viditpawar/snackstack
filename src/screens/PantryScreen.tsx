@@ -151,7 +151,7 @@ export default function PantryScreen({ initialFilter }: { initialFilter: PantryF
                   const low = item.quantity > 0 && isLow(item)
                   return (
                     <SwipeRow key={item.id} className={`item item-tone-${tone}`} onDelete={() => removePantry(item.id)}>
-                      <ItemIcon category={item.category} />
+                      <ItemIcon name={item.name} category={item.category} />
                       <button className="item-main" onClick={() => setEditing(item)}>
                         <span className="item-name">{item.name}</span>
                         <span className="item-sub">

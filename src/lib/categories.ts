@@ -87,3 +87,47 @@ const FALLBACK = { emoji: '🛒', color: '#94a3b8' }
 export function categoryStyle(category: string | null | undefined) {
   return (category && STYLES[category]) || FALLBACK
 }
+
+// Emoji for specific items, so eggs get 🥚 rather than their aisle's 🥛.
+// Each key is a whole word (plurals allowed); a trailing * matches any word starting with it.
+const ITEM_EMOJI: Record<string, string> = {
+  egg: '🥚', milk: '🥛', 'coconut milk': '🥥', cheese: '🧀', paneer: '🧀', butter: '🧈', 'peanut butter': '🥜',
+  yogurt: '🥣', yoghurt: '🥣', curd: '🥣', dahi: '🥣', cream: '🥛', 'ice cream': '🍨', ghee: '🧈',
+  bread: '🍞', loaf: '🍞', toast: '🍞', bagel: '🥯', croissant: '🥐', baguette: '🥖', bun: '🍞', pita: '🫓', naan: '🫓',
+  roti: '🫓', chapati: '🫓', tortilla: '🫓', cake: '🍰', cookie: '🍪', biscuit: '🍪', donut: '🍩', doughnut: '🍩', muffin: '🧁',
+  pancake: '🥞', waffle: '🧇',
+  apple: '🍎', banana: '🍌', orange: '🍊', lemon: '🍋', lime: '🍋', lemonade: '🍋', grape: '🍇', 'strawberr*': '🍓',
+  'blueberr*': '🫐', 'cherr*': '🍒', peach: '🍑', pear: '🍐', mango: '🥭', pineapple: '🍍', watermelon: '🍉', melon: '🍈',
+  kiwi: '🥝', coconut: '🥥', avocado: '🥑',
+  tomato: '🍅', potato: '🥔', aloo: '🥔', carrot: '🥕', corn: '🌽', broccoli: '🥦', cauliflower: '🥦', gobi: '🥦',
+  cucumber: '🥒', zucchini: '🥒', okra: '🥒', bhindi: '🥒', lettuce: '🥬', spinach: '🥬', palak: '🥬', kale: '🥬', cabbage: '🥬',
+  eggplant: '🍆', brinjal: '🍆', aubergine: '🍆', baingan: '🍆', capsicum: '🫑', 'bell pepper': '🫑', chili: '🌶️', chilli: '🌶️',
+  'chillies': '🌶️', 'chilies': '🌶️', jalapeno: '🌶️', garlic: '🧄', onion: '🧅', ginger: '🫚', mushroom: '🍄', pea: '🫛',
+  bean: '🫘', chickpea: '🫘', lentil: '🫘', dal: '🫘', rajma: '🫘', chana: '🫘', herb: '🌿', cilantro: '🌿', coriander: '🌿',
+  mint: '🌿', basil: '🌿',
+  chicken: '🍗', turkey: '🍗', beef: '🥩', steak: '🥩', lamb: '🥩', mutton: '🥩', mince: '🥩', pork: '🥓', bacon: '🥓',
+  ham: '🍖', sausage: '🌭', 'hot dog': '🌭', fish: '🐟', salmon: '🐟', tuna: '🐟', cod: '🐟', shrimp: '🦐', prawn: '🦐',
+  crab: '🦀', tofu: '🧈',
+  rice: '🍚', pasta: '🍝', spaghetti: '🍝', noodle: '🍜', ramen: '🍜', flour: '🌾', atta: '🌾', besan: '🌾', oat: '🥣',
+  cereal: '🥣', granola: '🥣', honey: '🍯', salt: '🧂', oil: '🫒', 'olive*': '🫒', peanut: '🥜', 'nut': '🥜', almond: '🥜',
+  cashew: '🥜', walnut: '🥜', popcorn: '🍿', chip: '🍟', crisp: '🍟', fries: '🍟', chocolate: '🍫', candy: '🍬', pizza: '🍕',
+  sandwich: '🥪', burger: '🍔', taco: '🌮', soup: '🍲', jam: '🍓', sugar: '🍬', spice: '🧂', masala: '🧂', sauce: '🥫',
+  ketchup: '🥫', can: '🥫',
+  coffee: '☕', tea: '🍵', chai: '🍵', juice: '🧃', water: '💧', soda: '🥤', cola: '🥤', milkshake: '🥤', beer: '🍺', wine: '🍷',
+  'paper towel': '🧻', 'toilet*': '🧻', tissue: '🧻', napkin: '🧻', soap: '🧼', detergent: '🧼', sponge: '🧽', shampoo: '🧴',
+  conditioner: '🧴', lotion: '🧴', sunscreen: '🧴', toothpaste: '🪥', toothbrush: '🪥', battery: '🔋', batteries: '🔋',
+  bulb: '💡', 'trash bag': '🗑️', 'garbage bag': '🗑️', foil: '🧻',
+}
+
+const EMOJI_RULES = Object.entries(ITEM_EMOJI)
+  .sort((a, b) => b[0].length - a[0].length)
+  .map(([key, emoji]) => {
+    const escaped = key.replace(/\*$/, '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    const pattern = key.endsWith('*') ? `\\b${escaped}` : `\\b${escaped}(s|es)?\\b`
+    return [new RegExp(pattern, 'i'), emoji] as const
+  })
+
+export function itemEmoji(name: string): string | null {
+  for (const [re, emoji] of EMOJI_RULES) if (re.test(name)) return emoji
+  return null
+}

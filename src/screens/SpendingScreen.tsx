@@ -248,7 +248,7 @@ export default function SpendingScreen() {
                 const qty = formatQty(p.quantity, p.unit)
                 return (
                   <SwipeRow key={p.id} className="item" onDelete={() => removePurchase(p.id)}>
-                    <ItemIcon category={p.category} emoji={p.name === 'Tax' ? '🧾' : undefined} />
+                    <ItemIcon name={p.name} category={p.category} emoji={p.name === 'Tax' ? '🧾' : undefined} />
                     <button className="item-main" onClick={() => setEditing(p)}>
                       <span className="item-name">{p.name}</span>
                       <span className="item-sub muted">{[qty, p.store].filter(Boolean).join(' · ')}</span>

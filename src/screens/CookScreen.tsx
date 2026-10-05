@@ -263,7 +263,7 @@ function RecipeDetail({ match, onDone }: { match: RecipeMatch; onDone: () => voi
             <span className="ing-mark">
               <Check size={14} strokeWidth={3} />
             </span>
-            {i.item ? <ItemIcon category={i.item.category} /> : <span className="ing-spacer" />}
+            {i.item ? <ItemIcon name={i.item.name} category={i.item.category} /> : <span className="ing-spacer" />}
             <span className="ing-name">{i.name}</span>
             <span className="ing-measure">{i.measure}</span>
           </li>

@@ -75,7 +75,7 @@ export default function ShoppingScreen() {
         <button className={`check${checked ? ' check-on' : ''}`} onClick={() => onToggle(item.id)} aria-pressed={checked} aria-label={`${item.name} in cart`}>
           <Check size={16} strokeWidth={3} />
         </button>
-        <ItemIcon category={item.category} />
+        <ItemIcon name={item.name} category={item.category} />
         <button className="item-main" onClick={() => setEditing(item)}>
           <span className="item-name">{item.name}</span>
           {qty && <span className="item-qty">{qty}</span>}

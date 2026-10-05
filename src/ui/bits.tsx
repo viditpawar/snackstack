@@ -1,7 +1,7 @@
 import type { CSSProperties, ReactNode } from 'react'
 import { AlertTriangle, Clock } from 'lucide-react'
 import { expiryInfo } from '../lib/format'
-import { categoryStyle } from '../lib/categories'
+import { categoryStyle, guessCategory, itemEmoji } from '../lib/categories'
 
 export function Logo({ size = 28 }: { size?: number }) {
   return (
@@ -23,12 +23,13 @@ export function Logo({ size = 28 }: { size?: number }) {
   )
 }
 
-// A tinted tile with the aisle's emoji, shown next to item names.
-export function ItemIcon({ category, emoji }: { category: string | null; emoji?: string }) {
-  const style = categoryStyle(category)
+// A tile tinted in the aisle's colour, with the item's own emoji (🥚 for eggs),
+// or the aisle's emoji when we don't have one for that item.
+export function ItemIcon({ name, category, emoji }: { name?: string; category: string | null; emoji?: string }) {
+  const style = categoryStyle(category ?? (name ? guessCategory(name) : null))
   return (
     <span className="item-icon" style={{ '--tile': style.color } as CSSProperties} aria-hidden>
-      {emoji ?? style.emoji}
+      {emoji ?? (name && itemEmoji(name)) ?? style.emoji}
     </span>
   )
 }

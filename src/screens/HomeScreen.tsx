@@ -152,7 +152,7 @@ export default function HomeScreen() {
             {useSoon.slice(0, 5).map((p) => (
               <li key={p.id}>
                 <span className="mini-main">
-                  <ItemIcon category={p.category} />
+                  <ItemIcon name={p.name} category={p.category} />
                   <span className="item-name">{p.name}</span>
                   <ExpiryPill date={p.expires_on} />
                 </span>
@@ -184,7 +184,7 @@ export default function HomeScreen() {
             {runningLow.slice(0, 5).map((p) => (
               <li key={p.id}>
                 <span className="mini-main">
-                  <ItemIcon category={p.category} />
+                  <ItemIcon name={p.name} category={p.category} />
                   <span className="item-name">{p.name}</span>
                   <span className="muted">{p.quantity === 0 ? 'Ran out' : `${p.quantity} left · keep ${p.min_quantity}`}</span>
                 </span>
