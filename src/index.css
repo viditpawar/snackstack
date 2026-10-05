@@ -3204,3 +3204,101 @@ kbd {
   font-size: 0.85rem;
   text-decoration: underline;
 }
+
+/* ---------- Recipes: cuisines, built-in recipe art, spice box ---------- */
+
+.cook-cuisines {
+  margin: 12px 0 0;
+}
+
+.cook-hint {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 0 0 14px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  background: var(--accent-soft);
+  color: var(--accent-soft-text);
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.cook-hint svg {
+  flex: none;
+  margin-top: 2px;
+}
+
+.recipe-art {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  position: relative;
+  overflow: hidden;
+}
+
+.recipe-art::after {
+  content: '';
+  position: absolute;
+  right: -30%;
+  top: -40%;
+  width: 90%;
+  height: 120%;
+  border-radius: 50%;
+  background: rgb(255 255 255 / 0.14);
+}
+
+.recipe-art span {
+  position: relative;
+  font-size: 3.4rem;
+  line-height: 1;
+  filter: drop-shadow(0 6px 10px rgb(0 0 0 / 0.2));
+}
+
+.recipe-hero.recipe-art {
+  aspect-ratio: 16 / 9;
+  border-radius: var(--radius);
+}
+
+.recipe-hero.recipe-art span {
+  font-size: 5rem;
+}
+
+.recipe-veg {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 7px;
+  background: rgb(255 255 255 / 0.95);
+  color: #15803d;
+  box-shadow: inset 0 0 0 1.5px #16a34a;
+}
+
+.recipe-aka {
+  margin-top: -6px;
+  font-size: 0.875rem;
+}
+
+.recipe-staples {
+  display: grid;
+  gap: 4px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+.recipe-staples-title {
+  font-weight: 700;
+  color: var(--text);
+}
+
+.pill svg {
+  flex: none;
+}

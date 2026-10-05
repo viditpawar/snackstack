@@ -1,31 +1,66 @@
-import { useMemo, useState, type FormEvent } from 'react'
-import { Check, ChefHat, ExternalLink, ListPlus, PlayCircle, RotateCw, Search, Sparkles, X } from 'lucide-react'
+import { useEffect, useMemo, useState, type FormEvent } from 'react'
+import { Check, Clock, ExternalLink, Leaf, ListPlus, PlayCircle, RotateCw, Search, Sparkles, X } from 'lucide-react'
 import { useStore } from '../store'
-import { matchMeal, rankMatches, searchMeals, steps, useRecipeSuggestions, type RecipeMatch } from '../lib/recipes'
+import { matchMeal, rankMatches, searchMeals, steps, useRecipeSuggestions, type Cuisine, type Meal, type RecipeMatch } from '../lib/recipes'
 import { normalizeName } from '../lib/items'
 import { Sheet } from '../ui/Sheet'
 import { Empty, ExpiryPill, ItemIcon, PageHead } from '../ui/bits'
 
+const CUISINE_KEY = 'snackstack.cuisine'
+const CUISINES: [Cuisine, string][] = [
+  ['all', 'All'],
+  ['indian', '🍛 Indian'],
+  ['veg', '🥗 Vegetarian'],
+]
+
+function loadCuisine(): Cuisine {
+  try {
+    const v = localStorage.getItem(CUISINE_KEY)
+    return v === 'indian' || v === 'veg' ? v : 'all'
+  } catch {
+    return 'all'
+  }
+}
+
 export default function CookScreen() {
   const { pantry } = useStore()
+  const [cuisine, setCuisine] = useState<Cuisine>(loadCuisine)
   const [focus, setFocus] = useState<string | null>(null)
   const [open, setOpen] = useState<RecipeMatch | null>(null)
   const [query, setQuery] = useState('')
   const [search, setSearch] = useState<{ query: string; status: 'loading' | 'error' | 'ready'; recipes: RecipeMatch[] } | null>(null)
-  const suggestions = useRecipeSuggestions(pantry, focus)
+  const suggestions = useRecipeSuggestions(pantry, focus, cuisine)
   const stocked = useMemo(() => pantry.filter((p) => p.quantity > 0), [pantry])
 
-  async function runSearch(e: FormEvent) {
-    e.preventDefault()
-    const q = query.trim()
-    if (!q) return setSearch(null)
+  useEffect(() => {
+    try {
+      localStorage.setItem(CUISINE_KEY, cuisine)
+    } catch {
+      // Preference just won't stick.
+    }
+  }, [cuisine])
+
+  async function runSearch(q: string, c: Cuisine) {
     setSearch({ query: q, status: 'loading', recipes: [] })
     try {
-      const meals = await searchMeals(q)
+      const meals = await searchMeals(q, c)
       setSearch({ query: q, status: 'ready', recipes: rankMatches(meals.map((m) => matchMeal(m, stocked))) })
     } catch {
       setSearch({ query: q, status: 'error', recipes: [] })
     }
+  }
+
+  function onSearch(e: FormEvent) {
+    e.preventDefault()
+    const q = query.trim()
+    if (!q) return setSearch(null)
+    runSearch(q, cuisine)
+  }
+
+  function pickCuisine(c: Cuisine) {
+    setCuisine(c)
+    setFocus(null)
+    if (search) runSearch(search.query, c)
   }
 
   const focusItem = focus ? pantry.find((p) => p.id === focus) : null
@@ -34,9 +69,9 @@ export default function CookScreen() {
     <>
       <PageHead title="What can I cook?" subtitle="Recipes using what's in your pantry, starting with what expires soonest" />
 
-      <form className="search" onSubmit={runSearch}>
+      <form className="search" onSubmit={onSearch}>
         <Search size={18} aria-hidden />
-        <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Or search any recipe, e.g. curry" aria-label="Search recipes" enterKeyHint="search" data-shortcut="focus" />
+        <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search recipes, e.g. dal, paneer, curry" aria-label="Search recipes" enterKeyHint="search" data-shortcut="focus" />
         {query && (
           <button
             type="button"
@@ -52,21 +87,30 @@ export default function CookScreen() {
         )}
       </form>
 
+      <div className="chips cook-cuisines" role="radiogroup" aria-label="Cuisine">
+        {CUISINES.map(([id, label]) => (
+          <button key={id} role="radio" aria-checked={cuisine === id} className={`chip${cuisine === id ? ' chip-on' : ''}`} onClick={() => pickCuisine(id)}>
+            {label}
+          </button>
+        ))}
+      </div>
+
       {search ? (
         <section className="cook-section">
           <h2 className="section-title">Results for “{search.query}”</h2>
           {search.status === 'loading' && <RecipeSkeletons />}
           {search.status === 'error' && <p className="alert alert-error">Couldn't reach the recipe service. Check your connection and try again.</p>}
-          {search.status === 'ready' && search.recipes.length === 0 && <p className="muted center pad">No recipes found. Try a simpler word like “chicken” or “soup”.</p>}
+          {search.status === 'ready' && search.recipes.length === 0 && <p className="muted center pad">No recipes found. Try a simpler word like “dal”, “chicken” or “soup”.</p>}
           {search.status === 'ready' && <RecipeGrid recipes={search.recipes} onOpen={setOpen} />}
         </section>
-      ) : stocked.length === 0 ? (
-        <Empty icon={<ChefHat size={28} />} title="Your pantry is empty">
-          Add what you have at home, or check out from your shopping list, and recipe ideas will show up here. You can still search for any recipe above.
-        </Empty>
       ) : (
         <section className="cook-section">
-          {suggestions.status === 'ready' && (
+          {stocked.length === 0 && (
+            <p className="cook-hint">
+              <Sparkles size={16} /> Add what you have to your pantry and these will be ranked by what you can make right now.
+            </p>
+          )}
+          {suggestions.status === 'ready' && suggestions.searchedWith.length > 0 && (
             <div className="chips cook-using">
               <span className="chips-label">Cooking with</span>
               {focusItem ? (
@@ -89,12 +133,10 @@ export default function CookScreen() {
             </Empty>
           )}
           {suggestions.status === 'empty' && (
-            <Empty icon={<ChefHat size={28} />} title="No matches yet">
-              We couldn't match your pantry items to recipes. Basics like chicken, eggs, rice, pasta or vegetables work best. Or search for a dish above.
-            </Empty>
+            <p className="muted center pad">{focusItem ? `No recipes use ${focusItem.name} yet.` : 'No recipes match this filter yet. Try another one.'}</p>
           )}
           {suggestions.status === 'ready' && <RecipeGrid recipes={suggestions.recipes} onOpen={setOpen} />}
-          <p className="hint">Recipes from TheMealDB, a free recipe database.</p>
+          <p className="hint">Recipes from SnackStack's own Indian collection and TheMealDB, a free recipe database.</p>
         </section>
       )}
 
@@ -104,6 +146,29 @@ export default function CookScreen() {
     </>
   )
 }
+
+// Our own recipes have no photo, so they get a colourful tile with their emoji.
+const ART = [
+  'linear-gradient(135deg, #f97316, #db2777)',
+  'linear-gradient(135deg, #f59e0b, #ef4444)',
+  'linear-gradient(135deg, #22c55e, #0d9488)',
+  'linear-gradient(135deg, #8b5cf6, #db2777)',
+  'linear-gradient(135deg, #eab308, #f97316)',
+  'linear-gradient(135deg, #06b6d4, #6366f1)',
+]
+
+function RecipeImage({ meal, className }: { meal: Meal; className: string }) {
+  if (meal.thumb) return <img className={className} src={`${meal.thumb}/medium`} alt="" loading="lazy" />
+  const hue = [...meal.id].reduce((h, c) => h + c.charCodeAt(0), 0) % ART.length
+  return (
+    <span className={`${className} recipe-art`} style={{ background: ART[hue] }} aria-hidden>
+      <span>{meal.emoji ?? '🍽️'}</span>
+    </span>
+  )
+}
+
+const metaLine = (meal: Meal) =>
+  [meal.area, meal.category, meal.minutes ? `${meal.minutes} min` : null].filter(Boolean).join(' · ')
 
 function RecipeSkeletons() {
   return (
@@ -122,28 +187,31 @@ function RecipeGrid({ recipes, onOpen }: { recipes: RecipeMatch[]; onOpen: (r: R
   return (
     <div className="recipe-grid">
       {recipes.map((r) => {
-        const total = r.meal.ingredients.length
+        const total = r.have.length + r.missing.length
         const pct = Math.round((r.have.length / Math.max(1, total)) * 100)
         return (
           <button key={r.meal.id} className="recipe-card" onClick={() => onOpen(r)}>
             <span className="recipe-img-wrap">
-              <img className="recipe-img" src={`${r.meal.thumb}/medium`} alt="" loading="lazy" />
+              <RecipeImage meal={r.meal} className="recipe-img" />
               {r.usesSoon.length > 0 && (
                 <span className="recipe-badge">
                   <Sparkles size={12} /> Uses up {r.usesSoon[0].name}
                 </span>
               )}
+              {r.meal.veg && (
+                <span className="recipe-veg" title="Vegetarian" aria-label="Vegetarian">
+                  <Leaf size={12} />
+                </span>
+              )}
             </span>
             <span className="recipe-body">
               <span className="recipe-name">{r.meal.name}</span>
-              <span className="recipe-meta">{[r.meal.area, r.meal.category].filter(Boolean).join(' · ')}</span>
+              <span className="recipe-meta">{metaLine(r.meal)}</span>
               <span className="recipe-match">
                 <span className="recipe-match-track">
                   <span style={{ width: `${pct}%` }} />
                 </span>
-                <span>
-                  {r.missing.length === 0 ? 'You have everything!' : `Have ${r.have.length} of ${total} · ${r.missing.length} to buy`}
-                </span>
+                <span>{r.missing.length === 0 ? 'You have everything!' : r.have.length === 0 ? `${total} ingredients` : `Have ${r.have.length} of ${total} · ${r.missing.length} to buy`}</span>
               </span>
             </span>
           </button>
@@ -155,21 +223,30 @@ function RecipeGrid({ recipes, onOpen }: { recipes: RecipeMatch[]; onOpen: (r: R
 
 function RecipeDetail({ match, onDone }: { match: RecipeMatch; onDone: () => void }) {
   const { shopping, addShoppingMany } = useStore()
-  const { meal, have, missing } = match
+  const { meal, have, missing, staples } = match
   const onList = new Set(shopping.map((s) => normalizeName(s.name)))
   const toBuy = missing.filter((m) => !onList.has(normalizeName(m.name)))
   const titleCase = (s: string) => s.replace(/(^|\s)\S/g, (c) => c.toUpperCase())
 
   return (
     <div className="recipe-detail">
-      <img className="recipe-hero" src={`${meal.thumb}/medium`} alt="" />
+      <RecipeImage meal={meal} className="recipe-hero" />
       <div className="recipe-tags">
         {meal.area && <span className="pill">{meal.area}</span>}
         {meal.category && <span className="pill">{meal.category}</span>}
-        <span className={`pill ${missing.length ? 'pill-soon' : 'pill-good'}`}>
-          {missing.length ? `${missing.length} to buy` : 'You have everything'}
-        </span>
+        {meal.minutes && (
+          <span className="pill">
+            <Clock size={12} /> {meal.minutes} min
+          </span>
+        )}
+        {meal.veg && (
+          <span className="pill pill-good">
+            <Leaf size={12} /> Vegetarian
+          </span>
+        )}
+        <span className={`pill ${missing.length ? 'pill-soon' : 'pill-good'}`}>{missing.length ? `${missing.length} to buy` : 'You have everything'}</span>
       </div>
+      {meal.aka && meal.aka.length > 0 && <p className="muted recipe-aka">Also called {meal.aka.join(', ')}</p>}
 
       {match.usesSoon.length > 0 && (
         <div className="recipe-uses">
@@ -208,6 +285,13 @@ function RecipeDetail({ match, onDone }: { match: RecipeMatch; onDone: () => voi
         ))}
       </ul>
 
+      {staples.length > 0 && (
+        <div className="recipe-staples">
+          <span className="recipe-staples-title">🧂 From your spice box</span>
+          <span>{staples.map((s) => (s.measure ? `${s.name} (${s.measure})` : s.name)).join(' · ')}</span>
+        </div>
+      )}
+
       {toBuy.length > 0 && (
         <button
           className="btn btn-primary btn-block"
@@ -223,23 +307,26 @@ function RecipeDetail({ match, onDone }: { match: RecipeMatch; onDone: () => voi
 
       <h3 className="recipe-h">Method</h3>
       <ol className="recipe-steps">
-        {steps(meal.instructions).map((s, i) => (
+        {steps(meal).map((s, i) => (
           <li key={i}>{s}</li>
         ))}
       </ol>
 
-      <div className="recipe-links">
-        {meal.youtube && (
-          <a className="btn btn-ghost btn-sm" href={meal.youtube} target="_blank" rel="noreferrer">
-            <PlayCircle size={16} /> Watch video
-          </a>
-        )}
-        {meal.source && (
-          <a className="btn btn-ghost btn-sm" href={meal.source} target="_blank" rel="noreferrer">
-            <ExternalLink size={16} /> Original recipe
-          </a>
-        )}
-      </div>
+      {(meal.youtube || meal.source) && (
+        <div className="recipe-links">
+          {meal.youtube && (
+            <a className="btn btn-ghost btn-sm" href={meal.youtube} target="_blank" rel="noreferrer">
+              <PlayCircle size={16} /> Watch video
+            </a>
+          )}
+          {meal.source && (
+            <a className="btn btn-ghost btn-sm" href={meal.source} target="_blank" rel="noreferrer">
+              <ExternalLink size={16} /> Original recipe
+            </a>
+          )}
+        </div>
+      )}
+      {meal.local && <p className="hint">A SnackStack kitchen recipe.</p>}
     </div>
   )
 }

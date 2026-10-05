@@ -60,6 +60,8 @@ Screenshots use sample data. Recipe photos are from [TheMealDB](https://www.them
 
 **Cooking**
 - **What can I cook?**: recipes ranked by how much of each you already have, with expiring food first
+- A built-in collection of 45 everyday Indian recipes (dals, sabzis, curries, rice dishes, breakfasts, sweets), plus All, Indian and Vegetarian filters
+- Hindi ingredient names understood: aloo, gobi, palak, matar, dahi, besan, atta, rajma, chana and more
 - A full recipe view with an ingredient checklist and **add the missing ones to my list**
 - Search any recipe and see how much of it you can already make
 
@@ -143,7 +145,12 @@ A receipt photo becomes purchases without leaving the device:
 
 ## What can I cook?
 
-TheMealDB's free API can search only one ingredient at a time, so suggestions are built in two steps:
+Recipes come from two sources, ranked together:
+
+- **SnackStack's own Indian collection** ([src/lib/indianRecipes.ts](src/lib/indianRecipes.ts)): 45 everyday dishes, from dal tadka and rajma to poha, sambar and biryani. It's bundled with the app, so it's instant and works offline. TheMealDB has only about 15 Indian recipes, so this fills the gap.
+- **[TheMealDB](https://www.themealdb.com)**: about 600 recipes from around the world.
+
+TheMealDB's free API can search only one ingredient at a time, so its suggestions are built in two steps:
 
 1. **Search.** Up to 6 pantry items, expiring first, are mapped to the database's ingredient names (for example "GV Milk 2%" becomes Milk) and searched.
 2. **Rank.** Recipes that come up for several of your ingredients, or for expiring ones, become candidates. A per-day shuffle breaks ties, so results vary instead of sorting alphabetically. The top 30 are scored on the share of ingredients you have, a bonus for using up expiring food, and a small penalty for each missing item.
@@ -158,7 +165,7 @@ Matching an ingredient is directional ([src/lib/recipes.ts](src/lib/recipes.ts))
 | Milk | coconut milk | **No**: a different ingredient |
 | Chicken thighs | chicken breasts | **No** |
 
-Salt, pepper and water count as things every kitchen has.
+Spices and basics (salt, oil, ghee, haldi, jeera, garam masala, whole spices and so on) are listed separately as "from your spice box" and don't count as missing. Otherwise every Indian recipe would look like it needs ten things you don't have. Hindi and English names are treated as the same ingredient (aloo and potato, dahi and yogurt, atta and whole wheat flour), and so are spelling variants like "green chillies" and "green chili".
 
 ## Privacy
 
@@ -183,6 +190,7 @@ Problems found while building and testing, and how they're handled:
 | "Total savings 1.00" on a receipt was read as a discount and taken off an item | Total lines are recognized first; savings and item-count totals are ignored |
 | "Milk" in the pantry matched "coconut milk" in recipes | Matching is directional, and extra words must be descriptors like "minced" or "fresh" |
 | Recipe search returned hundreds of results sorted A to Z, so "Apam balik" topped every list | A wider candidate pool, ranked by fit, with a per-day shuffle for ties |
+| TheMealDB has about 15 Indian recipes, so an Indian kitchen got poor suggestions | A bundled collection of 45 Indian recipes, Hindi ingredient synonyms, and spices treated as staples |
 | Newer Chrome returns a value from `window.scrollTo`, which React treated as an effect cleanup and crashed on | Effects never return expression results |
 | A blurred, translucent header made the fixed bottom tab bar position itself inside the header on phones | No `backdrop-filter` on the header at phone widths |
 | Browsers kept serving an old `index.html` after a deploy | [public/_headers](public/_headers) sets `no-cache` on the page, and caches hashed assets forever |
@@ -215,6 +223,7 @@ snackstack/
 │   │   ├── receipt.ts            # image preparation and OCR
 │   │   ├── receiptParse.ts       # receipt text -> store, date, items, tax, total
 │   │   ├── recipes.ts            # TheMealDB client, ingredient matching, ranking
+│   │   ├── indianRecipes.ts      # 45 built-in Indian recipes
 │   │   ├── settings.tsx          # currency and budget, stored in the user profile
 │   │   ├── format.ts             # local dates, money, months
 │   │   ├── device.ts             # voice, sharing, CSV export, online status
@@ -327,7 +336,7 @@ instead of failing silently.
 - The cart is per device by design; a second phone won't see what's in your cart.
 - Each account is separate. There is no shared household list yet.
 - Receipt OCR reads English, printed receipts best; faded or crumpled ones need more correction.
-- TheMealDB has about 600 recipes, leaning Western, so a small pantry gives modest matches.
+- Beyond the 45 built-in Indian recipes, suggestions come from TheMealDB's roughly 600 recipes, which lean Western.
 - Aisle guessing is keyword based and English only; you can change any item's aisle.
 - Currency is a display setting. Amounts aren't converted, so stick to one currency.
 - Voice input needs Chrome, Edge or Safari.
