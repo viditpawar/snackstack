@@ -3,14 +3,14 @@ import { Check, LayoutList, ListChecks, Mic, Plus, Share2, ShoppingBasket, Trash
 import { useStore } from '../store'
 import { useCart } from '../lib/cart'
 import { buildHistory, isLow, lastPrice, normalizeName, parseQuickAdd, recentStores, restockQuantity, splitItems, type HistoryEntry } from '../lib/items'
-import { CATEGORIES, aisleIndex } from '../lib/categories'
+import { CATEGORIES, aisleIndex, categoryStyle } from '../lib/categories'
 import { addDays, currencySymbol, formatMoney, formatQty, today } from '../lib/format'
 import { canListen, listen, shareText } from '../lib/device'
 import type { ShoppingItem } from '../types'
 import { Sheet } from '../ui/Sheet'
 import { Stepper } from '../ui/Stepper'
 import { useToast } from '../ui/Toast'
-import { Empty, Field, PageHead } from '../ui/bits'
+import { Empty, Field, ItemIcon, PageHead } from '../ui/bits'
 
 const GROUP_KEY = 'snackstack.groupByAisle'
 
@@ -74,6 +74,7 @@ export default function ShoppingScreen() {
         <button className={`check${checked ? ' check-on' : ''}`} onClick={() => onToggle(item.id)} aria-pressed={checked} aria-label={`${item.name} in cart`}>
           <Check size={16} strokeWidth={3} />
         </button>
+        <ItemIcon category={item.category} />
         <button className="item-main" onClick={() => setEditing(item)}>
           <span className="item-name">{item.name}</span>
           {qty && <span className="item-qty">{qty}</span>}
@@ -122,7 +123,7 @@ export default function ShoppingScreen() {
             aisles.map(([aisle, items]) => (
               <section key={aisle}>
                 <h2 className="section-title">
-                  {aisle} <span>{items.length}</span>
+                  {categoryStyle(items[0].category).emoji} {aisle} <span>{items.length}</span>
                 </h2>
                 <ul className="items">{items.map(row)}</ul>
               </section>
@@ -359,7 +360,7 @@ function EditItem({ item, onDone }: { item: ShoppingItem; onDone: () => void }) 
         <div className="chips">
           {CATEGORIES.map((c) => (
             <button type="button" key={c} className={`chip${category === c ? ' chip-on' : ''}`} onClick={() => setCategory(category === c ? null : c)}>
-              {c}
+              {categoryStyle(c).emoji} {c}
             </button>
           ))}
         </div>

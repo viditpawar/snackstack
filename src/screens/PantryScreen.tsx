@@ -3,12 +3,12 @@ import { ListPlus, Plus, Refrigerator, Search, Trash, Trash2, X } from 'lucide-r
 import { useStore } from '../store'
 import { SOON_DAYS, addDays, daysUntil, expiryInfo, formatDate } from '../lib/format'
 import { isLow, normalizeName, restockQuantity, sameItem } from '../lib/items'
-import { CATEGORIES, LOCATIONS, guessCategory, guessLocation } from '../lib/categories'
+import { CATEGORIES, LOCATIONS, categoryStyle, guessCategory, guessLocation } from '../lib/categories'
 import type { PantryItem } from '../types'
 import { Sheet } from '../ui/Sheet'
 import { Stepper } from '../ui/Stepper'
 import { PriceHistory } from '../ui/PriceHistory'
-import { Empty, ExpiryPill, Field, PageHead } from '../ui/bits'
+import { Empty, ExpiryPill, Field, ItemIcon, PageHead } from '../ui/bits'
 
 export type PantryFilter = 'all' | 'soon' | 'low'
 
@@ -134,7 +134,7 @@ export default function PantryScreen({ initialFilter }: { initialFilter: PantryF
           {groups.map((g) => (
             <section key={g.name}>
               <h2 className="section-title">
-                {g.name} <span>{g.items.length}</span>
+                {categoryStyle(g.items[0].category).emoji} {g.name} <span>{g.items.length}</span>
               </h2>
               <ul className="items">
                 {g.items.map((item) => {
@@ -142,6 +142,7 @@ export default function PantryScreen({ initialFilter }: { initialFilter: PantryF
                   const low = item.quantity > 0 && isLow(item)
                   return (
                     <li key={item.id} className={`item item-tone-${tone}`}>
+                      <ItemIcon category={item.category} />
                       <button className="item-main" onClick={() => setEditing(item)}>
                         <span className="item-name">{item.name}</span>
                         <span className="item-sub">
@@ -281,7 +282,7 @@ function PantryForm({ item, onDone }: { item: PantryItem | null; onDone: () => v
                 setTouched((t) => ({ ...t, category: true }))
               }}
             >
-              {c}
+              {categoryStyle(c).emoji} {c}
             </button>
           ))}
         </div>

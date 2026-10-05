@@ -1,17 +1,35 @@
-import type { ReactNode } from 'react'
+import type { CSSProperties, ReactNode } from 'react'
 import { AlertTriangle, Clock } from 'lucide-react'
 import { expiryInfo } from '../lib/format'
+import { categoryStyle } from '../lib/categories'
 
 export function Logo({ size = 28 }: { size?: number }) {
   return (
     <svg viewBox="0 0 512 512" width={size} height={size} aria-hidden className="logo">
-      <rect width="512" height="512" rx="120" fill="var(--accent)" />
-      <g fill="var(--on-accent)">
+      <defs>
+        <linearGradient id="snackstack-logo" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#7c3aed" />
+          <stop offset="0.55" stopColor="#db2777" />
+          <stop offset="1" stopColor="#f97316" />
+        </linearGradient>
+      </defs>
+      <rect width="512" height="512" rx="120" fill="url(#snackstack-logo)" />
+      <g fill="#fff">
         <rect x="136" y="300" width="240" height="60" rx="30" />
         <rect x="160" y="220" width="192" height="60" rx="30" opacity=".85" />
         <rect x="184" y="140" width="144" height="60" rx="30" opacity=".7" />
       </g>
     </svg>
+  )
+}
+
+// A tinted tile with the aisle's emoji, shown next to item names.
+export function ItemIcon({ category, emoji }: { category: string | null; emoji?: string }) {
+  const style = categoryStyle(category)
+  return (
+    <span className="item-icon" style={{ '--tile': style.color } as CSSProperties} aria-hidden>
+      {emoji ?? style.emoji}
+    </span>
   )
 }
 

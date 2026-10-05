@@ -68,3 +68,22 @@ export function aisleIndex(category: string | null): number {
   const i = category ? CATEGORIES.indexOf(category) : -1
   return i === -1 ? CATEGORIES.length : i
 }
+
+// Each aisle gets an emoji and a colour, used for item tiles and section headings.
+const STYLES: Record<string, { emoji: string; color: string }> = {
+  Produce: { emoji: '🥦', color: '#22c55e' },
+  Bakery: { emoji: '🥖', color: '#f59e0b' },
+  'Dairy & eggs': { emoji: '🥛', color: '#3b82f6' },
+  'Meat & fish': { emoji: '🍗', color: '#ef4444' },
+  Frozen: { emoji: '🧊', color: '#06b6d4' },
+  Pantry: { emoji: '🥫', color: '#f97316' },
+  Snacks: { emoji: '🍪', color: '#ec4899' },
+  Drinks: { emoji: '🧃', color: '#8b5cf6' },
+  Household: { emoji: '🧻', color: '#64748b' },
+  'Personal care': { emoji: '🧴', color: '#a855f7' },
+}
+const FALLBACK = { emoji: '🛒', color: '#94a3b8' }
+
+export function categoryStyle(category: string | null | undefined) {
+  return (category && STYLES[category]) || FALLBACK
+}

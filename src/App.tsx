@@ -123,7 +123,7 @@ function Shell({ email }: { email: string }) {
   else content = <HomeScreen />
 
   return (
-    <div className="shell">
+    <div className="shell" data-screen={screen}>
       {!online && (
         <div className="offline-banner" role="status">
           <WifiOff size={16} /> You're offline. Changes won't save until you reconnect.

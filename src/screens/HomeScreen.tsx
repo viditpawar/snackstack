@@ -3,7 +3,7 @@ import { useStore } from '../store'
 import { useSettings } from '../lib/settings'
 import { daysUntil, formatMoney, greeting, monthLabel, today } from '../lib/format'
 import { isLow, normalizeName, restockQuantity } from '../lib/items'
-import { ExpiryPill, PageHead } from '../ui/bits'
+import { ExpiryPill, ItemIcon } from '../ui/bits'
 import { isUseSoon } from './PantryScreen'
 
 export default function HomeScreen() {
@@ -27,24 +27,41 @@ export default function HomeScreen() {
 
   return (
     <>
-      <PageHead title={greeting()} subtitle={dateline} />
+      <header className="home-hero">
+        <p className="home-hero-date">{dateline}</p>
+        <h1>{greeting()}</h1>
+        <p className="home-hero-sub">
+          {isNew
+            ? "Let's get your kitchen organised."
+            : [
+                shopping.length ? `${shopping.length} thing${shopping.length === 1 ? '' : 's'} to buy` : 'Nothing to buy',
+                urgent ? `${urgent} to use soon` : null,
+                runningLow.length ? `${runningLow.length} running low` : null,
+              ]
+                .filter(Boolean)
+                .join(' · ')}
+        </p>
+        <span className="home-hero-emoji" aria-hidden>
+          🥑🥕🍋
+        </span>
+      </header>
 
       <div className="stats">
-        <a href="#/list" className="stat">
+        <a href="#/list" className="stat stat-list">
           <span className="stat-icon">
             <ShoppingCart size={18} />
           </span>
           <span className="stat-value">{shopping.length}</span>
           <span className="stat-label">to buy</span>
         </a>
-        <a href="#/pantry?filter=soon" className={`stat${urgent ? ' stat-warn' : ''}`}>
+        <a href="#/pantry?filter=soon" className={`stat stat-pantry${urgent ? ' stat-warn' : ''}`}>
           <span className="stat-icon">
             <Clock size={18} />
           </span>
           <span className="stat-value">{urgent}</span>
           <span className="stat-label">use soon</span>
         </a>
-        <a href="#/spending" className={`stat${budgetPct !== null && budgetPct > 100 ? ' stat-danger' : budgetPct !== null && budgetPct >= 85 ? ' stat-warn' : ''}`}>
+        <a href="#/spending" className={`stat stat-spend${budgetPct !== null && budgetPct > 100 ? ' stat-danger' : budgetPct !== null && budgetPct >= 85 ? ' stat-warn' : ''}`}>
           <span className="stat-icon">
             <Receipt size={18} />
           </span>
@@ -104,6 +121,7 @@ export default function HomeScreen() {
             {useSoon.slice(0, 5).map((p) => (
               <li key={p.id}>
                 <span className="mini-main">
+                  <ItemIcon category={p.category} />
                   <span className="item-name">{p.name}</span>
                   <ExpiryPill date={p.expires_on} />
                 </span>
@@ -135,6 +153,7 @@ export default function HomeScreen() {
             {runningLow.slice(0, 5).map((p) => (
               <li key={p.id}>
                 <span className="mini-main">
+                  <ItemIcon category={p.category} />
                   <span className="item-name">{p.name}</span>
                   <span className="muted">{p.quantity === 0 ? 'Ran out' : `${p.quantity} left · keep ${p.min_quantity}`}</span>
                 </span>

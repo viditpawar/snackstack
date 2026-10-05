@@ -4,11 +4,11 @@ import { useStore } from '../store'
 import { useSettings } from '../lib/settings'
 import { currencySymbol, daysInMonth, formatMoney, formatQty, monthLabel, relativeDay, shiftMonth, today } from '../lib/format'
 import { normalizeName, recentStores } from '../lib/items'
-import { CATEGORIES } from '../lib/categories'
+import { CATEGORIES, categoryStyle } from '../lib/categories'
 import type { Purchase } from '../types'
 import { Sheet } from '../ui/Sheet'
 import { PriceHistory } from '../ui/PriceHistory'
-import { Empty, Field, PageHead } from '../ui/bits'
+import { Empty, Field, ItemIcon, PageHead } from '../ui/bits'
 import ReceiptScan from './ReceiptScan'
 
 const CHART_MONTHS = 6
@@ -247,6 +247,7 @@ export default function SpendingScreen() {
                 const qty = formatQty(p.quantity, p.unit)
                 return (
                   <li key={p.id} className="item">
+                    <ItemIcon category={p.category} emoji={p.name === 'Tax' ? '🧾' : undefined} />
                     <button className="item-main" onClick={() => setEditing(p)}>
                       <span className="item-name">{p.name}</span>
                       <span className="item-sub muted">{[qty, p.store].filter(Boolean).join(' · ')}</span>
@@ -361,7 +362,7 @@ function PurchaseForm({ item, defaultDate, onDone }: { item: Purchase | null; de
                 setCategoryTouched(true)
               }}
             >
-              {c}
+              {categoryStyle(c).emoji} {c}
             </button>
           ))}
         </div>

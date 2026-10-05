@@ -1,32 +1,56 @@
 /* ---------- Tokens ---------- */
 
-:root {
-  --bg: #f5f6f2;
-  --surface: #ffffff;
-  --surface-2: #eff1ec;
-  --surface-3: #e5e8e2;
-  --text: #17201a;
-  --muted: #637068;
-  --faint: #98a29b;
-  --border: #e1e5de;
-  --accent: #1f7a4a;
-  --accent-hover: #186a3f;
-  --accent-soft: #e2f1e7;
-  --accent-soft-text: #17603a;
-  --on-accent: #ffffff;
-  --bar: #bfdccb;
-  --warn: #9a5b00;
-  --warn-soft: #fff0d4;
-  --danger: #bf3a2f;
-  --danger-soft: #fde8e6;
-  --shadow-sm: 0 1px 2px rgb(16 24 20 / 0.06);
-  --shadow: 0 1px 2px rgb(16 24 20 / 0.05), 0 4px 16px rgb(16 24 20 / 0.06);
-  --shadow-lg: 0 12px 40px rgb(16 24 20 / 0.18);
-  --backdrop: rgb(10 16 12 / 0.4);
-  --toast-action: #86e0b0;
+/* Each tab has its own colour. The palette is defined per theme below, and
+   .shell[data-screen] maps the current tab's colour onto --accent. */
 
-  --radius: 14px;
-  --radius-sm: 10px;
+:root {
+  --bg: #f6f7fb;
+  --surface: #ffffff;
+  --surface-2: #f1f2f8;
+  --surface-3: #e5e7f0;
+  --text: #161a2e;
+  --muted: #5f647a;
+  --faint: #979bb0;
+  --border: #e3e5ef;
+  --warn: #b45309;
+  --warn-soft: #fff3dc;
+  --danger: #d92d3a;
+  --danger-soft: #feeaec;
+  --shadow-sm: 0 1px 2px rgb(22 26 46 / 0.06);
+  --shadow: 0 1px 2px rgb(22 26 46 / 0.04), 0 6px 20px rgb(22 26 46 / 0.06);
+  --shadow-lg: 0 16px 48px rgb(22 26 46 / 0.18);
+  --backdrop: rgb(16 18 32 / 0.45);
+  --toast-action: #c4b5fd;
+
+  --violet: #7c3aed;
+  --violet-hover: #6d28d9;
+  --violet-soft: #f1ebff;
+  --violet-text: #5b21b6;
+  --violet-bar: #d9c9fd;
+  --violet-on: #ffffff;
+  --orange: #e8590c;
+  --orange-hover: #d9480f;
+  --orange-soft: #fff0e5;
+  --orange-text: #b33e05;
+  --orange-bar: #ffd0b0;
+  --orange-on: #ffffff;
+  --teal: #0d9488;
+  --teal-hover: #0f766e;
+  --teal-soft: #e0f6f3;
+  --teal-text: #0f6b63;
+  --teal-bar: #a5e5dc;
+  --teal-on: #ffffff;
+  --pink: #db2777;
+  --pink-hover: #be185d;
+  --pink-soft: #fdeaf3;
+  --pink-text: #a3164f;
+  --pink-bar: #f8c2d9;
+  --pink-on: #ffffff;
+
+  --brand-gradient: linear-gradient(135deg, #7c3aed 0%, #db2777 55%, #f97316 100%);
+
+  --radius: 16px;
+  --radius-sm: 11px;
   --nav-h: 64px;
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
@@ -43,58 +67,134 @@
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
-    --bg: #0e1310;
-    --surface: #161c18;
-    --surface-2: #1d2420;
-    --surface-3: #262f29;
-    --text: #e7ede8;
-    --muted: #97a39b;
-    --faint: #66726a;
-    --border: #28312b;
-    --accent: #4cc283;
-    --accent-hover: #63d095;
-    --accent-soft: #183526;
-    --accent-soft-text: #8fe0b4;
-    --on-accent: #06140c;
-    --bar: #2a5340;
-    --warn: #f2b85b;
-    --warn-soft: #3a2b10;
-    --danger: #ff8a7f;
-    --danger-soft: #3c1c19;
+    --bg: #0e0f17;
+    --surface: #171923;
+    --surface-2: #1f222e;
+    --surface-3: #2a2d3c;
+    --text: #ecedf4;
+    --muted: #9a9eb3;
+    --faint: #6b6f85;
+    --border: #2a2d3b;
+    --warn: #f5b84f;
+    --warn-soft: #3a2a10;
+    --danger: #ff7d86;
+    --danger-soft: #3d1a1f;
     --shadow-sm: none;
     --shadow: 0 0 0 1px rgb(255 255 255 / 0.02);
-    --shadow-lg: 0 12px 40px rgb(0 0 0 / 0.5);
+    --shadow-lg: 0 16px 48px rgb(0 0 0 / 0.55);
     --backdrop: rgb(0 0 0 / 0.6);
-    --toast-action: #17603a;
+    --toast-action: #5b21b6;
+
+    --violet: #a78bfa;
+    --violet-hover: #c4b5fd;
+    --violet-soft: #271d45;
+    --violet-text: #cbbcff;
+    --violet-bar: #4a3a7f;
+    --violet-on: #160c2e;
+    --orange: #fb923c;
+    --orange-hover: #fdba74;
+    --orange-soft: #382213;
+    --orange-text: #fdba74;
+    --orange-bar: #7a4220;
+    --orange-on: #2a1405;
+    --teal: #2dd4bf;
+    --teal-hover: #5eead4;
+    --teal-soft: #0f312d;
+    --teal-text: #7fe7d8;
+    --teal-bar: #1e5d55;
+    --teal-on: #04201c;
+    --pink: #f472b6;
+    --pink-hover: #f9a8d4;
+    --pink-soft: #3a1628;
+    --pink-text: #f9a8d4;
+    --pink-bar: #7a2d52;
+    --pink-on: #2b0716;
     color-scheme: dark;
   }
 }
 
 :root[data-theme='dark'] {
-  --bg: #0e1310;
-  --surface: #161c18;
-  --surface-2: #1d2420;
-  --surface-3: #262f29;
-  --text: #e7ede8;
-  --muted: #97a39b;
-  --faint: #66726a;
-  --border: #28312b;
-  --accent: #4cc283;
-  --accent-hover: #63d095;
-  --accent-soft: #183526;
-  --accent-soft-text: #8fe0b4;
-  --on-accent: #06140c;
-  --bar: #2a5340;
-  --warn: #f2b85b;
-  --warn-soft: #3a2b10;
-  --danger: #ff8a7f;
-  --danger-soft: #3c1c19;
+  --bg: #0e0f17;
+  --surface: #171923;
+  --surface-2: #1f222e;
+  --surface-3: #2a2d3c;
+  --text: #ecedf4;
+  --muted: #9a9eb3;
+  --faint: #6b6f85;
+  --border: #2a2d3b;
+  --warn: #f5b84f;
+  --warn-soft: #3a2a10;
+  --danger: #ff7d86;
+  --danger-soft: #3d1a1f;
   --shadow-sm: none;
   --shadow: 0 0 0 1px rgb(255 255 255 / 0.02);
-  --shadow-lg: 0 12px 40px rgb(0 0 0 / 0.5);
+  --shadow-lg: 0 16px 48px rgb(0 0 0 / 0.55);
   --backdrop: rgb(0 0 0 / 0.6);
-  --toast-action: #17603a;
+  --toast-action: #5b21b6;
+
+  --violet: #a78bfa;
+  --violet-hover: #c4b5fd;
+  --violet-soft: #271d45;
+  --violet-text: #cbbcff;
+  --violet-bar: #4a3a7f;
+  --violet-on: #160c2e;
+  --orange: #fb923c;
+  --orange-hover: #fdba74;
+  --orange-soft: #382213;
+  --orange-text: #fdba74;
+  --orange-bar: #7a4220;
+  --orange-on: #2a1405;
+  --teal: #2dd4bf;
+  --teal-hover: #5eead4;
+  --teal-soft: #0f312d;
+  --teal-text: #7fe7d8;
+  --teal-bar: #1e5d55;
+  --teal-on: #04201c;
+  --pink: #f472b6;
+  --pink-hover: #f9a8d4;
+  --pink-soft: #3a1628;
+  --pink-text: #f9a8d4;
+  --pink-bar: #7a2d52;
+  --pink-on: #2b0716;
   color-scheme: dark;
+}
+
+/* Current tab colour. Violet is the default (Home, sign-in). */
+:root,
+.shell[data-screen='home'] {
+  --accent: var(--violet);
+  --accent-hover: var(--violet-hover);
+  --accent-soft: var(--violet-soft);
+  --accent-soft-text: var(--violet-text);
+  --bar: var(--violet-bar);
+  --on-accent: var(--violet-on);
+}
+
+.shell[data-screen='list'] {
+  --accent: var(--orange);
+  --accent-hover: var(--orange-hover);
+  --accent-soft: var(--orange-soft);
+  --accent-soft-text: var(--orange-text);
+  --bar: var(--orange-bar);
+  --on-accent: var(--orange-on);
+}
+
+.shell[data-screen='pantry'] {
+  --accent: var(--teal);
+  --accent-hover: var(--teal-hover);
+  --accent-soft: var(--teal-soft);
+  --accent-soft-text: var(--teal-text);
+  --bar: var(--teal-bar);
+  --on-accent: var(--teal-on);
+}
+
+.shell[data-screen='spending'] {
+  --accent: var(--pink);
+  --accent-hover: var(--pink-hover);
+  --accent-soft: var(--pink-soft);
+  --accent-soft-text: var(--pink-text);
+  --bar: var(--pink-bar);
+  --on-accent: var(--pink-on);
 }
 
 /* ---------- Base ---------- */
@@ -312,7 +412,7 @@ input[type='number']::-webkit-outer-spin-button {
   padding: 12px 16px;
   /* No backdrop-filter here on phones: it would make the fixed bottom nav (a child) position
      relative to this header instead of the screen. */
-  background: var(--bg);
+  background: color-mix(in srgb, var(--bg) 94%, transparent);
 }
 
 @media (min-width: 760px) {
@@ -1049,9 +1149,9 @@ input[type='number']::-webkit-outer-spin-button {
 }
 
 .chip-on {
-  background: var(--text);
-  border-color: var(--text);
-  color: var(--bg);
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--on-accent);
 }
 
 .chip-on svg {
@@ -2541,4 +2641,235 @@ kbd {
 .alert-warn svg {
   flex: none;
   margin-top: 2px;
+}
+
+/* ---------- Colour & personality ---------- */
+
+/* Soft colour glow behind each page, tinted by the current tab. */
+.shell {
+  position: relative;
+  isolation: isolate;
+}
+
+.shell::before {
+  content: '';
+  position: fixed;
+  inset: 0 0 auto 0;
+  height: 420px;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(38rem 18rem at 8% -4rem, color-mix(in srgb, var(--accent) 22%, transparent), transparent 70%),
+    radial-gradient(30rem 16rem at 100% -2rem, color-mix(in srgb, var(--pink) 14%, transparent), transparent 70%),
+    radial-gradient(26rem 14rem at 55% -6rem, color-mix(in srgb, var(--orange) 10%, transparent), transparent 70%);
+  transition: background 0.4s;
+}
+
+.page-head h1 {
+  background: linear-gradient(90deg, var(--text) 0%, color-mix(in srgb, var(--accent) 70%, var(--text)) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Home banner */
+.home-hero {
+  position: relative;
+  overflow: hidden;
+  margin: 8px 0 16px;
+  padding: 22px 20px 20px;
+  border-radius: 22px;
+  background: var(--brand-gradient);
+  color: #fff;
+  box-shadow: 0 12px 32px color-mix(in srgb, #db2777 28%, transparent);
+}
+
+.home-hero::after {
+  content: '';
+  position: absolute;
+  right: -60px;
+  top: -70px;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  background: rgb(255 255 255 / 0.12);
+}
+
+.home-hero h1 {
+  font-size: 1.9rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.home-hero-date {
+  font-size: 0.85rem;
+  font-weight: 600;
+  opacity: 0.85;
+  margin-bottom: 4px;
+}
+
+.home-hero-sub {
+  margin-top: 8px;
+  font-weight: 500;
+  opacity: 0.95;
+  max-width: 75%;
+}
+
+.home-hero-emoji {
+  position: absolute;
+  right: 16px;
+  bottom: 12px;
+  font-size: 1.6rem;
+  letter-spacing: 2px;
+  filter: drop-shadow(0 2px 4px rgb(0 0 0 / 0.15));
+}
+
+/* Stat cards, each in its tab's colour */
+.stat-list {
+  --stat: var(--orange);
+  --stat-soft: var(--orange-soft);
+  --stat-text: var(--orange-text);
+}
+
+.stat-pantry {
+  --stat: var(--teal);
+  --stat-soft: var(--teal-soft);
+  --stat-text: var(--teal-text);
+}
+
+.stat-spend {
+  --stat: var(--pink);
+  --stat-soft: var(--pink-soft);
+  --stat-text: var(--pink-text);
+}
+
+.stat-list,
+.stat-pantry,
+.stat-spend {
+  background: linear-gradient(160deg, color-mix(in srgb, var(--stat) 9%, var(--surface)) 0%, var(--surface) 70%);
+}
+
+.stat-list .stat-icon,
+.stat-pantry .stat-icon,
+.stat-spend .stat-icon {
+  background: var(--stat);
+  color: #fff;
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--stat) 35%, transparent);
+}
+
+.stat-list:hover,
+.stat-pantry:hover,
+.stat-spend:hover {
+  border-color: var(--stat);
+  transform: translateY(-1px);
+}
+
+.stat-meter span {
+  background: var(--stat, var(--accent));
+}
+
+.stat-pantry.stat-warn .stat-icon {
+  background: var(--warn);
+  color: #fff;
+}
+
+/* Item tiles */
+.item-icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--tile) 16%, var(--surface));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--tile) 22%, transparent);
+  font-size: 1.15rem;
+  line-height: 1;
+}
+
+.item > .item-icon {
+  margin-left: 10px;
+}
+
+.check + .item-icon {
+  margin-left: 0;
+}
+
+.item-icon + .item-main {
+  padding-left: 10px;
+}
+
+.item-done .item-icon {
+  opacity: 0.5;
+  filter: grayscale(0.6);
+}
+
+.mini-main .item-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  font-size: 1rem;
+}
+
+/* Buttons and cards get a bit more life */
+.btn-primary {
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--accent) 30%, transparent);
+}
+
+.fab {
+  background: linear-gradient(140deg, var(--accent), var(--accent-hover));
+}
+
+.card-title svg {
+  color: var(--accent);
+}
+
+.hero {
+  background: linear-gradient(165deg, color-mix(in srgb, var(--accent) 8%, var(--surface)) 0%, var(--surface) 60%);
+}
+
+.items {
+  box-shadow: var(--shadow);
+}
+
+.item {
+  transition: background-color 0.15s;
+}
+
+.item:hover {
+  background: color-mix(in srgb, var(--accent) 4%, var(--surface));
+}
+
+/* Sign-in page: colourful backdrop */
+.auth {
+  background:
+    radial-gradient(40rem 26rem at 0% 0%, color-mix(in srgb, var(--violet) 26%, transparent), transparent 65%),
+    radial-gradient(36rem 24rem at 100% 10%, color-mix(in srgb, var(--pink) 22%, transparent), transparent 65%),
+    radial-gradient(40rem 26rem at 50% 110%, color-mix(in srgb, var(--orange) 20%, transparent), transparent 65%),
+    var(--bg);
+}
+
+.auth-brand h1 {
+  background: var(--brand-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.auth-features li:nth-child(1) svg {
+  color: var(--orange);
+}
+
+.auth-features li:nth-child(2) svg {
+  color: var(--teal);
+}
+
+.auth-features li:nth-child(3) svg {
+  color: var(--pink);
+}
+
+.auth .btn-primary {
+  background: var(--brand-gradient);
+  color: #fff;
 }

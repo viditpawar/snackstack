@@ -4,7 +4,7 @@
   "description": "Track your groceries, pantry and spending.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#f5f6f2",
-  "theme_color": "#1f7a4a",
+  "background_color": "#f6f7fb",
+  "theme_color": "#7c3aed",
   "icons": [{ "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
 }
