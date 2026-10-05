@@ -43,12 +43,14 @@ Screenshots use sample data. Recipe photos are from [TheMealDB](https://www.them
 - Suggestions for what's running low and what you buy often
 - Items sorted into aisles automatically, with an optional group-by-aisle view
 - Notes on items, and sharing the list as text
+- Swipe an item left to remove it
 - A cart for the store trip, then **one checkout** that logs prices, sets expiry dates and moves everything into the pantry, merging with what's already there
 
 **Pantry**
 - Expiry tracking with "use soon" warnings, and quick presets (3 days, 1 week, 1 month)
 - Low-stock levels ("keep at least 2") that prompt you to restock
 - Fridge, freezer and cupboard locations; search; filters for use soon and running low
+- Swipe left to delete, or tap the delete button that replaces **−** once an item reaches 0
 - "Tossed it" logs food waste with its estimated cost
 - Price history for every item: last, average and lowest price, and the cheapest store
 
@@ -59,7 +61,7 @@ Screenshots use sample data. Recipe photos are from [TheMealDB](https://www.them
 - Breakdown by store or by aisle, top items, and a food waste summary
 
 **Cooking**
-- **What can I cook?**: recipes ranked by how much of each you already have, with expiring food first
+- **What can I cook?**, in its own Recipes tab: recipes ranked by how much of each you already have, with expiring food first, then what you added most recently
 - A built-in collection of 45 everyday Indian recipes (dals, sabzis, curries, rice dishes, breakfasts, sweets), plus All, Indian and Vegetarian filters
 - Hindi ingredient names understood: aloo, gobi, palak, matar, dahi, besan, atta, rajma, chana and more
 - A full recipe view with an ingredient checklist and **add the missing ones to my list**
@@ -67,6 +69,7 @@ Screenshots use sample data. Recipe photos are from [TheMealDB](https://www.them
 
 **Everywhere**
 - Changes appear instantly, with undo on deletes and checkouts
+- Every item gets its own emoji (🥚 eggs, 🧀 paneer, 🍞 bread) on a tile tinted by its aisle
 - Email and password or Google sign-in, with password reset
 - Your currency of choice (USD by default), CSV export, keyboard shortcuts, light, dark and auto themes
 - Installable to your home screen, with a phone-first layout and a desktop layout
@@ -152,7 +155,7 @@ Recipes come from two sources, ranked together:
 
 TheMealDB's free API can search only one ingredient at a time, so its suggestions are built in two steps:
 
-1. **Search.** Up to 6 pantry items, expiring first, are mapped to the database's ingredient names (for example "GV Milk 2%" becomes Milk) and searched.
+1. **Search.** Up to 6 pantry items, expiring first and then the most recently added, are mapped to the database's ingredient names (for example "GV Milk 2%" becomes Milk) and searched. Every recipe, from either source, is then matched against your whole pantry.
 2. **Rank.** Recipes that come up for several of your ingredients, or for expiring ones, become candidates. A per-day shuffle breaks ties, so results vary instead of sorting alphabetically. The top 30 are scored on the share of ingredients you have, a bonus for using up expiring food, and a small penalty for each missing item.
 
 Matching an ingredient is directional ([src/lib/recipes.ts](src/lib/recipes.ts)):
@@ -177,6 +180,8 @@ Spices and basics (salt, oil, ghee, haldi, jeera, garam masala, whole spices and
 | Voice input | Handled by the browser's speech service (in Chrome, Google's servers) |
 | Cart contents, theme | Stored on the device only |
 
+The full policy is at [/privacy.html](public/privacy.html) and is linked from the sign-in page. It's also what Google sign-in's consent screen points to.
+
 ## Design notes
 
 Problems found while building and testing, and how they're handled:
@@ -195,6 +200,11 @@ Problems found while building and testing, and how they're handled:
 | A blurred, translucent header made the fixed bottom tab bar position itself inside the header on phones | No `backdrop-filter` on the header at phone widths |
 | Browsers kept serving an old `index.html` after a deploy | [public/_headers](public/_headers) sets `no-cache` on the page, and caches hashed assets forever |
 | The OCR engine is large and most visits never scan | It's loaded with a dynamic `import()` only when you scan, in its own chunk |
+| On iPhone, the keyboard covered the add-item form, because Safari doesn't shrink the page for the keyboard | Panels size themselves to the `visualViewport` (the area above the keyboard) and scroll the focused field into view. Fields are at least 16px, so Safari doesn't zoom in |
+| Swipe to delete had to coexist with scrolling and with taps on the same row | `touch-action: pan-y` leaves vertical scrolling to the browser; a drag only counts as a swipe once it's clearly sideways, and the click that ends a swipe is swallowed so it doesn't also tick or open the item |
+| A pantry item at 0 had no obvious way to be removed, but deleting it automatically would lose the "ran out" signal | At 0, the **−** button becomes a delete button. Items stay at 0 (and feed the restock suggestions) until you choose to remove them |
+| A newly added pantry item didn't show up in recipe suggestions | Suggestions use the whole pantry, ordered expiring first and then newest first, so the latest additions are always searched |
+| Eggs showed a 🥛, because icons came from the aisle ("Dairy & eggs") | About 150 items have their own emoji, matched as whole words with the longest match first, so "peanut butter" is 🥜, not 🧈 |
 
 ## Tech stack
 
@@ -228,14 +238,14 @@ snackstack/
 │   │   ├── format.ts             # local dates, money, months
 │   │   ├── device.ts             # voice, sharing, CSV export, online status
 │   │   └── cart.ts, route.ts, theme.ts
-│   ├── ui/                       # Sheet, Toast, Stepper, PriceHistory, shared bits
+│   ├── ui/                       # Sheet, SwipeRow, Toast, Stepper, PriceHistory, shared bits
 │   ├── store.tsx                 # all data, optimistic updates, undo
 │   ├── index.css                 # design tokens, per-tab colors, light and dark themes
 │   └── App.tsx                   # auth gate, shell, navigation, settings
 ├── supabase/
 │   ├── schema.sql                # tables, indexes, RLS policies
 │   └── migrations/               # schema changes, run in order
-├── public/                       # icon, web app manifest, Cloudflare cache headers
+├── public/                       # icon, web app manifest, privacy policy, Cloudflare cache headers
 ├── docs/screenshots/
 ├── wrangler.jsonc                # Cloudflare Workers config
 └── vite.config.ts
