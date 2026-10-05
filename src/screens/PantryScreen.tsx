@@ -76,11 +76,9 @@ export default function PantryScreen({ initialFilter }: { initialFilter: PantryF
         title="Pantry"
         subtitle={subtitle}
         action={
-          pantry.some((p) => p.quantity > 0) && (
-            <a href="#/cook" className="btn btn-ghost btn-sm">
-              <ChefHat size={16} /> What can I cook?
-            </a>
-          )
+          <a href="#/cook" className="btn btn-ghost btn-sm">
+            <ChefHat size={16} /> What can I cook?
+          </a>
         }
       />
 

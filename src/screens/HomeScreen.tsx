@@ -86,7 +86,7 @@ export default function HomeScreen() {
                 <ShoppingCart size={18} />
                 <span>
                   <strong>Make a shopping list</strong>
-                  <small>Type “milk, eggs, 2 kg rice”, use your voice, or scan a barcode.</small>
+                  <small>Type “milk, eggs, 2 kg rice”, or just say it out loud.</small>
                 </span>
               </a>
             </li>
@@ -108,11 +108,20 @@ export default function HomeScreen() {
                 </span>
               </a>
             </li>
+            <li>
+              <a href="#/cook">
+                <ChefHat size={18} />
+                <span>
+                  <strong>Find something to cook</strong>
+                  <small>Recipe ideas from what you have, using up what expires first.</small>
+                </span>
+              </a>
+            </li>
           </ol>
         </section>
       )}
 
-      {pantry.some((p) => p.quantity > 0) && (
+      {!isNew && (
         <a href="#/cook" className="card cook-cta">
           <span className="cook-cta-icon">
             <ChefHat size={22} />
@@ -125,7 +134,9 @@ export default function HomeScreen() {
                     .slice(0, 2)
                     .map((p) => p.name)
                     .join(' and ')}`
-                : 'Recipe ideas from what you already have'}
+                : pantry.some((p) => p.quantity > 0)
+                  ? 'Recipe ideas from what you already have'
+                  : 'Search recipes, or add pantry items for ideas'}
             </small>
           </span>
           <ChevronRight size={20} className="cook-cta-arrow" />

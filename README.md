@@ -315,7 +315,7 @@ instead of failing silently.
 
 | Key | Action |
 |---|---|
-| `1` to `4` | Switch tabs |
+| `1` to `5` | Switch tabs |
 | `/` | Jump to the add or search box |
 | `n` | Add a pantry item or purchase |
 | `Esc` | Close a panel |

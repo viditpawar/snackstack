@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react'
 import type { Session } from '@supabase/supabase-js'
-import { Download, House, Keyboard, LogOut, Monitor, Moon, Refrigerator, RotateCw, Settings as SettingsIcon, ShoppingCart, Sun, WifiOff, Wallet } from 'lucide-react'
+import { ChefHat, Download, House, Keyboard, LogOut, Monitor, Moon, Refrigerator, RotateCw, Settings as SettingsIcon, ShoppingCart, Sun, WifiOff, Wallet } from 'lucide-react'
 import { supabase } from './supabase'
 import { StoreProvider, useStore } from './store'
 import { useRoute, type Screen } from './lib/route'
@@ -58,6 +58,7 @@ const NAV: { screen: Screen; href: string; label: string; Icon: typeof House }[]
   { screen: 'home', href: '#/', label: 'Home', Icon: House },
   { screen: 'list', href: '#/list', label: 'List', Icon: ShoppingCart },
   { screen: 'pantry', href: '#/pantry', label: 'Pantry', Icon: Refrigerator },
+  { screen: 'cook', href: '#/cook', label: 'Recipes', Icon: ChefHat },
   { screen: 'spending', href: '#/spending', label: 'Spending', Icon: Wallet },
 ]
 
@@ -75,7 +76,7 @@ function Shell({ email }: { email: string }) {
     window.scrollTo(0, 0)
   }, [screen])
 
-  // Keyboard shortcuts: 1-4 switch tabs, / focuses the search or add box, n adds something new.
+  // Keyboard shortcuts: 1-5 switch tabs, / focuses the search or add box, n adds something new.
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       if (e.metaKey || e.ctrlKey || e.altKey || isTyping(e.target) || document.querySelector('dialog[open]')) return
@@ -306,7 +307,7 @@ function SettingsForm({ onDone }: { onDone: () => void }) {
         </h3>
         <dl className="shortcuts">
           <dt>
-            <kbd>1</kbd>–<kbd>4</kbd>
+            <kbd>1</kbd>–<kbd>5</kbd>
           </dt>
           <dd>Switch tabs</dd>
           <dt>
