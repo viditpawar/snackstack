@@ -3198,3 +3198,10 @@ kbd {
   flex-wrap: wrap;
   gap: 8px;
 }
+
+.auth-privacy {
+  margin-top: -12px;
+  color: var(--muted);
+  font-size: 0.85rem;
+  text-decoration: underline;
+}

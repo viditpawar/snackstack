@@ -169,6 +169,9 @@ export default function AuthScreen() {
           <Wallet size={18} /> Spending by month
         </li>
       </ul>
+      <a className="auth-privacy" href="/privacy.html">
+        Privacy policy
+      </a>
     </div>
   )
 }
