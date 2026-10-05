@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, type FormEvent } from 'react'
-import { ListPlus, Plus, Refrigerator, Search, Trash, Trash2, X } from 'lucide-react'
+import { ChefHat, ListPlus, Plus, Refrigerator, Search, Trash, Trash2, X } from 'lucide-react'
 import { useStore } from '../store'
 import { SOON_DAYS, addDays, daysUntil, expiryInfo, formatDate } from '../lib/format'
 import { isLow, normalizeName, restockQuantity, sameItem } from '../lib/items'
@@ -72,7 +72,17 @@ export default function PantryScreen({ initialFilter }: { initialFilter: PantryF
 
   return (
     <>
-      <PageHead title="Pantry" subtitle={subtitle} />
+      <PageHead
+        title="Pantry"
+        subtitle={subtitle}
+        action={
+          pantry.some((p) => p.quantity > 0) && (
+            <a href="#/cook" className="btn btn-ghost btn-sm">
+              <ChefHat size={16} /> What can I cook?
+            </a>
+          )
+        }
+      />
 
       {pantry.length === 0 ? (
         <Empty icon={<Refrigerator size={28} />} title="Your pantry is empty">

@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react'
 
-export type Screen = 'home' | 'list' | 'pantry' | 'spending'
+export type Screen = 'home' | 'list' | 'pantry' | 'spending' | 'cook'
 
-const SCREENS: Screen[] = ['home', 'list', 'pantry', 'spending']
+const SCREENS: Screen[] = ['home', 'list', 'pantry', 'spending', 'cook']
 
-// Hash routes: #/, #/list, #/pantry?filter=soon, #/spending
+// Hash routes: #/, #/list, #/pantry?filter=soon, #/spending, #/cook
 function parse(hash: string) {
   const [path, query] = hash.replace(/^#\/?/, '').split('?')
   const screen = SCREENS.includes(path as Screen) ? (path as Screen) : 'home'

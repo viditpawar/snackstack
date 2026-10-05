@@ -16,6 +16,7 @@ import HomeScreen from './screens/HomeScreen'
 import ShoppingScreen from './screens/ShoppingScreen'
 import PantryScreen, { isUseSoon, type PantryFilter } from './screens/PantryScreen'
 import SpendingScreen from './screens/SpendingScreen'
+import CookScreen from './screens/CookScreen'
 
 export default function App() {
   const [session, setSession] = useState<Session | null>(null)
@@ -120,6 +121,7 @@ function Shell({ email }: { email: string }) {
     const filter = params.get('filter')
     content = <PantryScreen initialFilter={filter === 'soon' || filter === 'low' ? (filter as PantryFilter) : 'all'} />
   } else if (screen === 'spending') content = <SpendingScreen />
+  else if (screen === 'cook') content = <CookScreen />
   else content = <HomeScreen />
 
   return (

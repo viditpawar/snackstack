@@ -1,4 +1,4 @@
-import { CircleCheck, Clock, ListPlus, PackageOpen, Receipt, Refrigerator, ShoppingCart, Sparkles, Trash } from 'lucide-react'
+import { ChefHat, ChevronRight, CircleCheck, Clock, ListPlus, PackageOpen, Receipt, Refrigerator, ShoppingCart, Sparkles, Trash } from 'lucide-react'
 import { useStore } from '../store'
 import { useSettings } from '../lib/settings'
 import { daysUntil, formatMoney, greeting, monthLabel, today } from '../lib/format'
@@ -110,6 +110,26 @@ export default function HomeScreen() {
             </li>
           </ol>
         </section>
+      )}
+
+      {pantry.some((p) => p.quantity > 0) && (
+        <a href="#/cook" className="card cook-cta">
+          <span className="cook-cta-icon">
+            <ChefHat size={22} />
+          </span>
+          <span className="cook-cta-text">
+            <strong>What can I cook?</strong>
+            <small>
+              {useSoon.length
+                ? `Recipe ideas that use up your ${useSoon
+                    .slice(0, 2)
+                    .map((p) => p.name)
+                    .join(' and ')}`
+                : 'Recipe ideas from what you already have'}
+            </small>
+          </span>
+          <ChevronRight size={20} className="cook-cta-arrow" />
+        </a>
       )}
 
       {useSoon.length > 0 && (
