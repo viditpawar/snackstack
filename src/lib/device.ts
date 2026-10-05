@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 
-// Browser features that only some devices have: voice input, barcode scanning, sharing, CSV download.
+// Browser features that only some devices have: voice input, sharing, CSV download.
 
 type Recognition = {
   lang: string
@@ -13,19 +13,15 @@ type Recognition = {
   onerror: (() => void) | null
 }
 
-type BarcodeDetectorLike = { detect(source: HTMLVideoElement): Promise<{ rawValue: string }[]> }
-
 type BrowserExtras = {
   SpeechRecognition?: new () => Recognition
   webkitSpeechRecognition?: new () => Recognition
-  BarcodeDetector?: new (options?: { formats: string[] }) => BarcodeDetectorLike
 }
 
 const extras = window as unknown as BrowserExtras
 const RecognitionCtor = extras.SpeechRecognition ?? extras.webkitSpeechRecognition
 
 export const canListen = Boolean(RecognitionCtor)
-export const canScan = Boolean(extras.BarcodeDetector && navigator.mediaDevices?.getUserMedia)
 
 export function listen(onText: (text: string) => void, onEnd: () => void): () => void {
   const r = new RecognitionCtor!()
@@ -37,29 +33,6 @@ export function listen(onText: (text: string) => void, onEnd: () => void): () =>
   r.onerror = onEnd
   r.start()
   return () => r.stop()
-}
-
-export function createBarcodeDetector(): BarcodeDetectorLike | null {
-  try {
-    return new extras.BarcodeDetector!({ formats: ['ean_13', 'ean_8', 'upc_a', 'upc_e', 'code_128'] })
-  } catch {
-    return null
-  }
-}
-
-// Product names come from Open Food Facts, a free open database of grocery barcodes.
-export async function lookupBarcode(code: string): Promise<string | null> {
-  try {
-    const res = await fetch(`https://world.openfoodfacts.org/api/v2/product/${encodeURIComponent(code)}.json?fields=product_name,brands`)
-    if (!res.ok) return null
-    const { product } = await res.json()
-    const name: string | undefined = product?.product_name?.trim()
-    if (!name) return null
-    const brand: string | undefined = product.brands?.split(',')[0]?.trim()
-    return brand && !name.toLowerCase().includes(brand.toLowerCase()) ? `${brand} ${name}` : name
-  } catch {
-    return null
-  }
 }
 
 // Returns 'shared', 'copied' or 'failed'.

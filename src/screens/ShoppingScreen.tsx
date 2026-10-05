@@ -1,15 +1,14 @@
 import { useEffect, useMemo, useRef, useState, type ClipboardEvent, type FormEvent } from 'react'
-import { Check, LayoutList, ListChecks, Mic, Plus, ScanBarcode, Share2, ShoppingBasket, Trash2 } from 'lucide-react'
+import { Check, LayoutList, ListChecks, Mic, Plus, Share2, ShoppingBasket, Trash2 } from 'lucide-react'
 import { useStore } from '../store'
 import { useCart } from '../lib/cart'
 import { buildHistory, isLow, lastPrice, normalizeName, parseQuickAdd, recentStores, restockQuantity, splitItems, type HistoryEntry } from '../lib/items'
 import { CATEGORIES, aisleIndex } from '../lib/categories'
 import { addDays, currencySymbol, formatMoney, formatQty, today } from '../lib/format'
-import { canListen, canScan, listen, shareText } from '../lib/device'
+import { canListen, listen, shareText } from '../lib/device'
 import type { ShoppingItem } from '../types'
 import { Sheet } from '../ui/Sheet'
 import { Stepper } from '../ui/Stepper'
-import { Scanner } from '../ui/Scanner'
 import { useToast } from '../ui/Toast'
 import { Empty, Field, PageHead } from '../ui/bits'
 
@@ -164,10 +163,8 @@ export default function ShoppingScreen() {
 
 function QuickAdd() {
   const { shopping, pantry, purchases, addShopping, addShoppingMany } = useStore()
-  const toast = useToast()
   const [text, setText] = useState('')
   const [listening, setListening] = useState(false)
-  const [scanning, setScanning] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
   const stopListening = useRef<(() => void) | null>(null)
 
@@ -258,13 +255,7 @@ function QuickAdd() {
               Add{many ? ` ${parts.length}` : ''}
             </button>
           ) : (
-            <>
-              {canScan && (
-                <button type="button" className="icon-btn" onClick={() => setScanning(true)} aria-label="Scan a barcode" title="Scan a barcode">
-                  <ScanBarcode size={20} />
-                </button>
-              )}
-              {canListen && (
+            canListen && (
                 <button
                   type="button"
                   className={`icon-btn${listening ? ' icon-btn-live' : ''}`}
@@ -275,8 +266,7 @@ function QuickAdd() {
                 >
                   <Mic size={20} />
                 </button>
-              )}
-            </>
+            )
           )}
         </div>
       </div>
@@ -325,18 +315,6 @@ function QuickAdd() {
         </div>
       )}
 
-      <Sheet open={scanning} onClose={() => setScanning(false)} title="Scan a barcode">
-        <Scanner
-          onResult={(name, code) => {
-            setScanning(false)
-            if (name) addShopping({ name, quantity: 1, unit: null })
-            else {
-              toast(`Couldn't find product ${code}. Type its name instead.`)
-              inputRef.current?.focus()
-            }
-          }}
-        />
-      </Sheet>
     </form>
   )
 }

@@ -273,6 +273,25 @@ function useStoreValue() {
       tossPantry,
 
       addPurchase: (input: NewPurchase) => sync([insert('purchases', [newRow(input)])]),
+      // Saves a scanned receipt (and optionally stocks the pantry) with a single undo.
+      addReceipt(inputs: NewPurchase[], pantryInputs: NewPantry[]) {
+        const purchases = inputs.map((i) => newRow(i))
+        const stocked = pantryInputs.map((i) => newRow(i))
+        const ops = [insert('purchases', purchases)]
+        if (stocked.length) ops.push(insert('pantry_items', stocked))
+        sync(ops)
+        const total = purchases.reduce((s, p) => s + p.price, 0)
+        toast(`Saved ${purchases.length} purchase${purchases.length === 1 ? '' : 's'} · ${formatMoney(total)}`, {
+          action: {
+            label: 'Undo',
+            onClick: () => {
+              const undo = [remove('purchases', purchases.map((p) => p.id))]
+              if (stocked.length) undo.push(remove('pantry_items', stocked.map((p) => p.id)))
+              sync(undo)
+            },
+          },
+        })
+      },
       updatePurchase: (id: string, changes: Partial<Purchase>) => sync([update('purchases', id, changes)]),
       removePurchase: (id: string) => removeWithUndo('purchases', id),
 

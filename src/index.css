@@ -310,9 +310,17 @@ input[type='number']::-webkit-outer-spin-button {
   max-width: 760px;
   margin: 0 auto;
   padding: 12px 16px;
-  background: color-mix(in srgb, var(--bg) 85%, transparent);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  /* No backdrop-filter here on phones: it would make the fixed bottom nav (a child) position
+     relative to this header instead of the screen. */
+  background: var(--bg);
+}
+
+@media (min-width: 760px) {
+  .topbar {
+    background: color-mix(in srgb, var(--bg) 85%, transparent);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
 }
 
 .brand {
@@ -2147,64 +2155,6 @@ code {
   margin: 0;
 }
 
-/* Scanner */
-.scanner {
-  display: grid;
-  gap: 8px;
-}
-
-.scanner-view {
-  position: relative;
-  aspect-ratio: 4 / 3;
-  border-radius: var(--radius);
-  overflow: hidden;
-  background: #000;
-}
-
-.scanner-view video {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.scanner-frame {
-  position: absolute;
-  inset: 28% 12%;
-  border: 3px solid #fff;
-  border-radius: 14px;
-  box-shadow: 0 0 0 999px rgb(0 0 0 / 0.35);
-}
-
-.scanner-frame::after {
-  content: '';
-  position: absolute;
-  left: 8px;
-  right: 8px;
-  top: 50%;
-  height: 2px;
-  background: #ff5a4f;
-  animation: scan-line 1.6s ease-in-out infinite;
-}
-
-@keyframes scan-line {
-  0%,
-  100% {
-    transform: translateY(-30px);
-  }
-  50% {
-    transform: translateY(30px);
-  }
-}
-
-.scanner-overlay {
-  position: absolute;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  color: #fff;
-  background: rgb(0 0 0 / 0.4);
-}
-
 /* Spending: budget, chart line, breakdown toggle */
 .card-head {
   display: flex;
@@ -2410,4 +2360,185 @@ kbd {
   font-size: 0.8rem;
   font-weight: 600;
   text-align: center;
+}
+
+/* Receipt scanning */
+.receipt {
+  display: grid;
+  gap: 14px;
+}
+
+.receipt-drop {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  padding: 32px 16px;
+  border: 2px dashed var(--border);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+  color: var(--muted);
+  transition: border-color 0.15s, background-color 0.15s;
+}
+
+.receipt-drop:hover {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.receipt-drop svg {
+  color: var(--accent);
+}
+
+.receipt-drop strong {
+  color: var(--text);
+  font-size: 1.05rem;
+}
+
+.receipt-tips {
+  margin: 0;
+  padding-left: 20px;
+  display: grid;
+  gap: 4px;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.receipt-reading {
+  display: grid;
+  gap: 12px;
+}
+
+.receipt-photo {
+  width: 100%;
+  max-height: 46dvh;
+  object-fit: contain;
+  border-radius: var(--radius);
+  background: var(--surface-2);
+}
+
+.receipt-photo-scanning {
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+
+.receipt-head {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.receipt-thumb {
+  flex: none;
+  width: 64px;
+  height: 80px;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.receipt-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.receipt-summary {
+  display: grid;
+  gap: 2px;
+  font-size: 0.925rem;
+}
+
+.receipt-summary p {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+}
+
+.receipt-summary p svg {
+  flex: none;
+  color: var(--accent);
+}
+
+.receipt-summary .link-btn {
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 0;
+}
+
+.text-warn,
+.receipt-summary p.text-warn svg {
+  color: var(--warn);
+}
+
+.receipt-rows {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+
+.receipt-rows li {
+  display: grid;
+  grid-template-columns: auto 1fr 104px auto;
+  gap: 8px;
+  align-items: center;
+}
+
+.receipt-rows input[type='checkbox'] {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--accent);
+}
+
+.receipt-rows input:not([type='checkbox']) {
+  padding: 9px 10px;
+}
+
+.receipt-rows .money input {
+  padding-left: 24px;
+  text-align: right;
+}
+
+.receipt-row-off .receipt-name,
+.receipt-row-off .money input {
+  opacity: 0.45;
+  text-decoration: line-through;
+}
+
+.add-line {
+  justify-self: start;
+}
+
+.receipt-total {
+  display: grid;
+  align-content: end;
+  justify-items: end;
+  padding-bottom: 6px;
+}
+
+.receipt-total small {
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.receipt-total strong {
+  font-size: 1.5rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.alert-warn {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  background: var(--warn-soft);
+  color: var(--warn);
+}
+
+.alert-warn svg {
+  flex: none;
+  margin-top: 2px;
 }

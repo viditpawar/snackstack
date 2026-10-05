@@ -1,5 +1,5 @@
 import { useMemo, useState, type FormEvent } from 'react'
-import { ChevronLeft, ChevronRight, Plus, Receipt, Trash, Trash2, X } from 'lucide-react'
+import { Camera, ChevronLeft, ChevronRight, Plus, Receipt, Trash, Trash2, X } from 'lucide-react'
 import { useStore } from '../store'
 import { useSettings } from '../lib/settings'
 import { currencySymbol, daysInMonth, formatMoney, formatQty, monthLabel, relativeDay, shiftMonth, today } from '../lib/format'
@@ -9,6 +9,7 @@ import type { Purchase } from '../types'
 import { Sheet } from '../ui/Sheet'
 import { PriceHistory } from '../ui/PriceHistory'
 import { Empty, Field, PageHead } from '../ui/bits'
+import ReceiptScan from './ReceiptScan'
 
 const CHART_MONTHS = 6
 
@@ -19,6 +20,7 @@ export default function SpendingScreen() {
   const [month, setMonth] = useState(thisMonth)
   const [editing, setEditing] = useState<Purchase | 'new' | null>(null)
   const [historyFor, setHistoryFor] = useState<string | null>(null)
+  const [scanning, setScanning] = useState(false)
   const [breakdownBy, setBreakdownBy] = useState<'store' | 'category'>('store')
 
   const byMonth = useMemo(() => {
@@ -84,7 +86,15 @@ export default function SpendingScreen() {
 
   return (
     <>
-      <PageHead title="Spending" subtitle="What your groceries cost" />
+      <PageHead
+        title="Spending"
+        subtitle="What your groceries cost"
+        action={
+          <button className="btn btn-ghost btn-sm" onClick={() => setScanning(true)}>
+            <Camera size={16} /> Scan receipt
+          </button>
+        }
+      />
 
       <div className="month-nav">
         <button className="icon-btn" onClick={() => setMonth(shiftMonth(month, -1))} aria-label="Previous month">
@@ -220,7 +230,10 @@ export default function SpendingScreen() {
 
       {monthPurchases.length === 0 ? (
         <Empty icon={<Receipt size={28} />} title={`Nothing logged for ${monthLabel(month, 'short')}`}>
-          Add prices when you check out from your shopping list, or log a purchase with the + button.
+          <p>Snap a photo of your receipt, add prices when you check out from your list, or log a purchase with the + button.</p>
+          <button className="btn btn-primary" onClick={() => setScanning(true)}>
+            <Camera size={18} /> Scan a receipt
+          </button>
         </Empty>
       ) : (
         days.map(([day, items]) => (
@@ -253,6 +266,9 @@ export default function SpendingScreen() {
 
       <Sheet open={editing !== null} onClose={() => setEditing(null)} title={editing === 'new' ? 'Log a purchase' : 'Edit purchase'}>
         {editing && <PurchaseForm item={editing === 'new' ? null : editing} defaultDate={month === thisMonth ? today() : `${month}-01`} onDone={() => setEditing(null)} />}
+      </Sheet>
+      <Sheet open={scanning} onClose={() => setScanning(false)} title="Scan a receipt">
+        {scanning && <ReceiptScan onDone={() => setScanning(false)} />}
       </Sheet>
       <Sheet open={historyFor !== null} onClose={() => setHistoryFor(null)} title={historyFor ?? 'Price history'}>
         {historyFor && <PriceHistory name={historyFor} />}

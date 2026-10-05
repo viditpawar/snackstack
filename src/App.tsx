@@ -70,7 +70,9 @@ function Shell({ email }: { email: string }) {
   const { status, loadError, shopping, pantry, refresh } = useStore()
   const online = useOnline()
 
-  useEffect(() => window.scrollTo(0, 0), [screen])
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [screen])
 
   // Keyboard shortcuts: 1-4 switch tabs, / focuses the search or add box, n adds something new.
   useEffect(() => {

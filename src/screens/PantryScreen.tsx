@@ -1,16 +1,13 @@
 import { useEffect, useMemo, useState, type FormEvent } from 'react'
-import { ListPlus, Plus, Refrigerator, ScanBarcode, Search, Trash, Trash2, X } from 'lucide-react'
+import { ListPlus, Plus, Refrigerator, Search, Trash, Trash2, X } from 'lucide-react'
 import { useStore } from '../store'
 import { SOON_DAYS, addDays, daysUntil, expiryInfo, formatDate } from '../lib/format'
 import { isLow, normalizeName, restockQuantity, sameItem } from '../lib/items'
 import { CATEGORIES, LOCATIONS, guessCategory, guessLocation } from '../lib/categories'
-import { canScan } from '../lib/device'
 import type { PantryItem } from '../types'
 import { Sheet } from '../ui/Sheet'
 import { Stepper } from '../ui/Stepper'
-import { Scanner } from '../ui/Scanner'
 import { PriceHistory } from '../ui/PriceHistory'
-import { useToast } from '../ui/Toast'
 import { Empty, ExpiryPill, Field, PageHead } from '../ui/bits'
 
 export type PantryFilter = 'all' | 'soon' | 'low'
@@ -33,7 +30,9 @@ export default function PantryScreen({ initialFilter }: { initialFilter: PantryF
   const [query, setQuery] = useState('')
   const [editing, setEditing] = useState<PantryItem | 'new' | null>(null)
 
-  useEffect(() => setFilter(initialFilter), [initialFilter])
+  useEffect(() => {
+    setFilter(initialFilter)
+  }, [initialFilter])
 
   const counts = {
     all: pantry.length,
@@ -181,7 +180,6 @@ const EXPIRY_PRESETS: [string, number][] = [
 
 function PantryForm({ item, onDone }: { item: PantryItem | null; onDone: () => void }) {
   const { shopping, addPantry, updatePantry, removePantry, addShopping, tossPantry, categoryFor } = useStore()
-  const toast = useToast()
   const [name, setName] = useState(item?.name ?? '')
   const [quantity, setQuantity] = useState(item?.quantity ?? 1)
   const [unit, setUnit] = useState(item?.unit ?? '')
@@ -190,7 +188,6 @@ function PantryForm({ item, onDone }: { item: PantryItem | null; onDone: () => v
   const [minQuantity, setMinQuantity] = useState(item?.min_quantity ?? NaN)
   const [expiresOn, setExpiresOn] = useState(item?.expires_on ?? '')
   const [touched, setTouched] = useState({ category: !!item, location: !!item })
-  const [scanning, setScanning] = useState(false)
 
   // For new items, guess the aisle and storage spot from the name until you pick one yourself.
   function onName(value: string) {
@@ -219,29 +216,10 @@ function PantryForm({ item, onDone }: { item: PantryItem | null; onDone: () => v
     onDone()
   }
 
-  if (scanning) {
-    return (
-      <Scanner
-        onResult={(found, code) => {
-          setScanning(false)
-          if (found) onName(found)
-          else toast(`Couldn't find product ${code}. Type its name instead.`)
-        }}
-      />
-    )
-  }
-
   return (
     <form className="form" onSubmit={submit}>
       <Field label="Name">
-        <span className="input-with-btn">
-          <input value={name} onChange={(e) => onName(e.target.value)} required placeholder="e.g. Greek yogurt" data-autofocus={item ? undefined : true} />
-          {!item && canScan && (
-            <button type="button" className="icon-btn" onClick={() => setScanning(true)} aria-label="Scan a barcode">
-              <ScanBarcode size={18} />
-            </button>
-          )}
-        </span>
+        <input value={name} onChange={(e) => onName(e.target.value)} required placeholder="e.g. Greek yogurt" data-autofocus={item ? undefined : true} />
       </Field>
       <div className="field-row">
         <Field label="Quantity" group>
