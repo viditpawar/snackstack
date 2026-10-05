@@ -9,12 +9,13 @@ import type { Purchase } from '../types'
 import { Sheet } from '../ui/Sheet'
 import { PriceHistory } from '../ui/PriceHistory'
 import { Empty, Field, ItemIcon, PageHead } from '../ui/bits'
+import { SwipeRow } from '../ui/SwipeRow'
 import ReceiptScan from './ReceiptScan'
 
 const CHART_MONTHS = 6
 
 export default function SpendingScreen() {
-  const { purchases, waste, removeWaste } = useStore()
+  const { purchases, waste, removeWaste, removePurchase } = useStore()
   const { budget } = useSettings()
   const thisMonth = today().slice(0, 7)
   const [month, setMonth] = useState(thisMonth)
@@ -246,14 +247,14 @@ export default function SpendingScreen() {
               {items.map((p) => {
                 const qty = formatQty(p.quantity, p.unit)
                 return (
-                  <li key={p.id} className="item">
+                  <SwipeRow key={p.id} className="item" onDelete={() => removePurchase(p.id)}>
                     <ItemIcon category={p.category} emoji={p.name === 'Tax' ? '🧾' : undefined} />
                     <button className="item-main" onClick={() => setEditing(p)}>
                       <span className="item-name">{p.name}</span>
                       <span className="item-sub muted">{[qty, p.store].filter(Boolean).join(' · ')}</span>
                     </button>
                     <span className="item-price">{formatMoney(p.price)}</span>
-                  </li>
+                  </SwipeRow>
                 )
               })}
             </ul>

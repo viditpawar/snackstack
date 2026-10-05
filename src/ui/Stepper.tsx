@@ -1,4 +1,4 @@
-import { Minus, Plus } from 'lucide-react'
+import { Minus, Plus, Trash2 } from 'lucide-react'
 import { round } from '../lib/format'
 
 type Props = {
@@ -8,15 +8,24 @@ type Props = {
   unit?: string | null
   min?: number
   editable?: boolean
+  // When given, the minus button becomes a delete button once the value is at its minimum.
+  onDelete?: () => void
 }
 
-export function Stepper({ value, onChange, label, unit, min = 0, editable }: Props) {
+export function Stepper({ value, onChange, label, unit, min = 0, editable, onDelete }: Props) {
   const canDecrease = round(value - 1) >= min
+  const showDelete = !canDecrease && onDelete
   return (
     <div className="stepper">
-      <button type="button" className="stepper-btn" onClick={() => onChange(round(value - 1))} disabled={!canDecrease} aria-label={`One less ${label}`}>
-        <Minus size={16} />
-      </button>
+      {showDelete ? (
+        <button type="button" className="stepper-btn stepper-delete" onClick={onDelete} aria-label={`Delete ${label}`} title="Delete">
+          <Trash2 size={16} />
+        </button>
+      ) : (
+        <button type="button" className="stepper-btn" onClick={() => onChange(round(value - 1))} disabled={!canDecrease} aria-label={`One less ${label}`}>
+          <Minus size={16} />
+        </button>
+      )}
       {editable ? (
         <input
           className="stepper-input"

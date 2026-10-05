@@ -11,6 +11,7 @@ import { Sheet } from '../ui/Sheet'
 import { Stepper } from '../ui/Stepper'
 import { useToast } from '../ui/Toast'
 import { Empty, Field, ItemIcon, PageHead } from '../ui/bits'
+import { SwipeRow } from '../ui/SwipeRow'
 
 const GROUP_KEY = 'snackstack.groupByAisle'
 
@@ -23,7 +24,7 @@ function loadGrouped(): boolean {
 }
 
 export default function ShoppingScreen() {
-  const { shopping } = useStore()
+  const { shopping, removeShopping } = useStore()
   const toast = useToast()
   const { cart, toggle } = useCart(shopping)
   const [editing, setEditing] = useState<ShoppingItem | null>(null)
@@ -70,7 +71,7 @@ export default function ShoppingScreen() {
     const checked = cart.has(item.id)
     const qty = formatQty(item.quantity, item.unit)
     return (
-      <li key={item.id} className={`item${checked ? ' item-done' : ''}`}>
+      <SwipeRow key={item.id} className={`item${checked ? ' item-done' : ''}`} onDelete={() => removeShopping(item.id)} label="Remove">
         <button className={`check${checked ? ' check-on' : ''}`} onClick={() => onToggle(item.id)} aria-pressed={checked} aria-label={`${item.name} in cart`}>
           <Check size={16} strokeWidth={3} />
         </button>
@@ -80,7 +81,7 @@ export default function ShoppingScreen() {
           {qty && <span className="item-qty">{qty}</span>}
           {item.note && <span className="item-note">{item.note}</span>}
         </button>
-      </li>
+      </SwipeRow>
     )
   }
 
@@ -137,7 +138,7 @@ export default function ShoppingScreen() {
               <ul className="items">{inCart.map(row)}</ul>
             </>
           )}
-          <p className="hint">Tap the circle to put an item in your cart. Tap the name to edit it.</p>
+          <p className="hint">Tap the circle to put an item in your cart, tap the name to edit, or swipe left to remove.</p>
         </>
       )}
 

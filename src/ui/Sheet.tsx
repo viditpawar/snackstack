@@ -16,6 +16,37 @@ export function Sheet({ open, onClose, title, children }: { open: boolean; onClo
     if (!open && dialog.open) dialog.close()
   }, [open])
 
+  // iOS Safari doesn't shrink the page when the keyboard opens, so a bottom sheet ends up behind it.
+  // Size the dialog to the visible part of the screen instead, and keep the focused field in view.
+  useEffect(() => {
+    const dialog = ref.current
+    const viewport = window.visualViewport
+    if (!open || !dialog || !viewport) return
+
+    const fit = () => {
+      dialog.style.height = `${viewport.height}px`
+      dialog.style.top = `${viewport.offsetTop}px`
+    }
+    const reveal = (e: FocusEvent) => {
+      const field = e.target as HTMLElement
+      if (!field.matches('input, select, textarea')) return
+      // Wait for the keyboard to finish sliding up.
+      window.setTimeout(() => field.scrollIntoView({ block: 'center', behavior: 'smooth' }), 300)
+    }
+
+    fit()
+    viewport.addEventListener('resize', fit)
+    viewport.addEventListener('scroll', fit)
+    dialog.addEventListener('focusin', reveal)
+    return () => {
+      viewport.removeEventListener('resize', fit)
+      viewport.removeEventListener('scroll', fit)
+      dialog.removeEventListener('focusin', reveal)
+      dialog.style.height = ''
+      dialog.style.top = ''
+    }
+  }, [open])
+
   return (
     <dialog
       ref={ref}

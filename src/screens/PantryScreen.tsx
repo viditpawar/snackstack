@@ -9,6 +9,7 @@ import { Sheet } from '../ui/Sheet'
 import { Stepper } from '../ui/Stepper'
 import { PriceHistory } from '../ui/PriceHistory'
 import { Empty, ExpiryPill, Field, ItemIcon, PageHead } from '../ui/bits'
+import { SwipeRow } from '../ui/SwipeRow'
 
 export type PantryFilter = 'all' | 'soon' | 'low'
 
@@ -24,7 +25,7 @@ function byExpiry(a: PantryItem, b: PantryItem) {
 }
 
 export default function PantryScreen({ initialFilter }: { initialFilter: PantryFilter }) {
-  const { pantry, shopping, setPantryQuantity, addShoppingMany } = useStore()
+  const { pantry, shopping, setPantryQuantity, addShoppingMany, removePantry } = useStore()
   const [filter, setFilter] = useState<PantryFilter>(initialFilter)
   const [place, setPlace] = useState<string | null>(null)
   const [query, setQuery] = useState('')
@@ -149,7 +150,7 @@ export default function PantryScreen({ initialFilter }: { initialFilter: PantryF
                   const tone = item.quantity === 0 ? 'out' : item.expires_on ? expiryInfo(item.expires_on).tone : 'none'
                   const low = item.quantity > 0 && isLow(item)
                   return (
-                    <li key={item.id} className={`item item-tone-${tone}`}>
+                    <SwipeRow key={item.id} className={`item item-tone-${tone}`} onDelete={() => removePantry(item.id)}>
                       <ItemIcon category={item.category} />
                       <button className="item-main" onClick={() => setEditing(item)}>
                         <span className="item-name">{item.name}</span>
@@ -159,13 +160,14 @@ export default function PantryScreen({ initialFilter }: { initialFilter: PantryF
                           {item.location && <span className="item-place">{item.location}</span>}
                         </span>
                       </button>
-                      <Stepper value={item.quantity} unit={item.unit} label={item.name} onChange={(q) => setPantryQuantity(item, q)} />
-                    </li>
+                      <Stepper value={item.quantity} unit={item.unit} label={item.name} onChange={(q) => setPantryQuantity(item, q)} onDelete={() => removePantry(item.id)} />
+                    </SwipeRow>
                   )
                 })}
               </ul>
             </section>
           ))}
+          {groups.length > 0 && <p className="hint">Swipe an item left to delete it, or tap 🗑 once it reaches 0.</p>}
         </>
       )}
 
