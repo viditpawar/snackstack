@@ -1,9 +1,10 @@
 import { ChefHat, ChevronRight, CircleCheck, Clock, ListPlus, PackageOpen, Receipt, Refrigerator, ShoppingCart, Sparkles, Trash } from 'lucide-react'
 import { useStore } from '../store'
 import { useSettings } from '../lib/settings'
-import { daysUntil, formatMoney, greeting, monthLabel, today } from '../lib/format'
+import { dayPhase, daysUntil, formatMoney, greeting, monthLabel, today } from '../lib/format'
 import { isLow, normalizeName, restockQuantity } from '../lib/items'
 import { ExpiryPill, ItemIcon } from '../ui/bits'
+import { HeroScene } from '../ui/HeroScene'
 import { isUseSoon } from './PantryScreen'
 
 export default function HomeScreen() {
@@ -22,12 +23,14 @@ export default function HomeScreen() {
   const tossed = waste.filter((w) => w.logged_on.startsWith(month))
   const isNew = shopping.length === 0 && pantry.length === 0 && purchases.length === 0
 
+  const phase = dayPhase()
   const dateline = new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' })
   const budgetPct = budget ? Math.round((spent / budget) * 100) : null
 
   return (
     <>
-      <header className="home-hero">
+      <header className={`home-hero home-hero-${phase}`}>
+        <HeroScene phase={phase} />
         <p className="home-hero-date">{dateline}</p>
         <h1>{greeting()}</h1>
         <p className="home-hero-sub">
@@ -41,9 +44,6 @@ export default function HomeScreen() {
                 .filter(Boolean)
                 .join(' · ')}
         </p>
-        <span className="home-hero-emoji" aria-hidden>
-          🥑🥕🍋
-        </span>
       </header>
 
       <div className="stats">

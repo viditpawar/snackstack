@@ -109,9 +109,15 @@ export function monthLabel(key: string, style: 'long' | 'short' = 'long'): strin
   return d.toLocaleDateString(undefined, style === 'long' ? { month: 'long', year: 'numeric' } : { month: 'short' })
 }
 
+export type DayPhase = 'morning' | 'afternoon' | 'evening'
+
+export function dayPhase(date = new Date()): DayPhase {
+  const h = date.getHours()
+  if (h >= 5 && h < 12) return 'morning'
+  if (h >= 12 && h < 17) return 'afternoon'
+  return 'evening'
+}
+
 export function greeting(): string {
-  const h = new Date().getHours()
-  if (h >= 5 && h < 12) return 'Good morning'
-  if (h >= 12 && h < 17) return 'Good afternoon'
-  return 'Good evening'
+  return { morning: 'Good morning', afternoon: 'Good afternoon', evening: 'Good evening' }[dayPhase()]
 }

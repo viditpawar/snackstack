@@ -2673,27 +2673,65 @@ kbd {
   color: transparent;
 }
 
-/* Home banner */
+/* Home banner: an illustrated sky that changes with the time of day */
 .home-hero {
   position: relative;
+  isolation: isolate;
   overflow: hidden;
+  min-height: 150px;
   margin: 8px 0 16px;
   padding: 22px 20px 20px;
   border-radius: 22px;
-  background: var(--brand-gradient);
   color: #fff;
-  box-shadow: 0 12px 32px color-mix(in srgb, #db2777 28%, transparent);
+  background: var(--brand-gradient);
 }
 
+.home-hero-morning {
+  background: linear-gradient(115deg, #6d28d9 0%, #db2777 42%, #f97316 78%, #fbbf24 100%);
+  box-shadow: 0 12px 32px color-mix(in srgb, #f97316 30%, transparent);
+}
+
+.home-hero-afternoon {
+  background: linear-gradient(115deg, #1e40af 0%, #0369a1 45%, #0ea5e9 80%, #7dd3fc 100%);
+  box-shadow: 0 12px 32px color-mix(in srgb, #0ea5e9 30%, transparent);
+}
+
+.home-hero-evening {
+  background: linear-gradient(115deg, #1e1b4b 0%, #3b0764 50%, #831843 100%);
+  box-shadow: 0 12px 32px color-mix(in srgb, #4c1d95 40%, transparent);
+}
+
+.hero-scene {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  /* Let glows spill past the drawing's edge; the banner itself clips to its rounded corners. */
+  overflow: visible;
+}
+
+/* Phones: the banner is taller relative to its width, which would blow the drawing up behind the
+   text. Shrink it into the bottom-right corner instead. */
+@media (max-width: 640px) {
+  .hero-scene {
+    transform: scale(0.6);
+    transform-origin: right bottom;
+  }
+
+  .home-hero h1 {
+    font-size: 1.7rem;
+  }
+}
+
+/* A gentle shade behind the text so it stays readable on every sky. */
 .home-hero::after {
   content: '';
   position: absolute;
-  right: -60px;
-  top: -70px;
-  width: 220px;
-  height: 220px;
-  border-radius: 50%;
-  background: rgb(255 255 255 / 0.12);
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(90deg, rgb(0 0 0 / 0.16) 0%, transparent 60%);
+  pointer-events: none;
 }
 
 .home-hero h1 {
@@ -2701,12 +2739,13 @@ kbd {
   font-weight: 800;
   letter-spacing: -0.02em;
   line-height: 1.1;
+  text-shadow: 0 1px 12px rgb(0 0 0 / 0.15);
 }
 
 .home-hero-date {
   font-size: 0.85rem;
   font-weight: 600;
-  opacity: 0.85;
+  opacity: 0.9;
   margin-bottom: 4px;
 }
 
@@ -2714,16 +2753,70 @@ kbd {
   margin-top: 8px;
   font-weight: 500;
   opacity: 0.95;
-  max-width: 75%;
+  max-width: 62%;
 }
 
-.home-hero-emoji {
-  position: absolute;
-  right: 16px;
-  bottom: 12px;
-  font-size: 1.6rem;
-  letter-spacing: 2px;
-  filter: drop-shadow(0 2px 4px rgb(0 0 0 / 0.15));
+.scene-clouds {
+  animation: cloud-drift 14s ease-in-out infinite alternate;
+}
+
+@keyframes cloud-drift {
+  to {
+    transform: translateX(-28px);
+  }
+}
+
+.scene-rays {
+  animation: spin 60s linear infinite;
+}
+
+.scene-glow {
+  animation: glow-pulse 5s ease-in-out infinite alternate;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+@keyframes glow-pulse {
+  to {
+    opacity: 0.6;
+    transform: scale(1.08);
+  }
+}
+
+.scene-star {
+  animation: twinkle 3s ease-in-out infinite;
+}
+
+@keyframes twinkle {
+  50% {
+    opacity: 0.25;
+  }
+}
+
+.scene-shooting {
+  stroke-dasharray: 60;
+  stroke-dashoffset: 60;
+  opacity: 0;
+  animation: shooting 9s ease-out infinite 2s;
+}
+
+@keyframes shooting {
+  0% {
+    opacity: 0;
+    stroke-dashoffset: 60;
+    transform: translate(0, 0);
+  }
+  4% {
+    opacity: 1;
+  }
+  10% {
+    opacity: 0;
+    stroke-dashoffset: -60;
+    transform: translate(-70px, 26px);
+  }
+  100% {
+    opacity: 0;
+  }
 }
 
 /* Stat cards, each in its tab's colour */
