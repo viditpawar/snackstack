@@ -28,10 +28,15 @@ free tiers, and it runs at zero cost for personal use.
 | ![Home](docs/screenshots/home.png) | ![Shopping list](docs/screenshots/shopping-list.png) | ![Pantry](docs/screenshots/pantry.png) | ![Spending](docs/screenshots/spending.png) |
 | A daily summary: what to buy, what to use soon, what's running low, and budget progress | Two items in the cart, suggestions for items running low and bought before | Grouped by aisle, with expiry, low-stock and storage location at a glance | A monthly budget with a dashed limit line, a 6-month trend, and a breakdown by store |
 
-| Receipt scanning | What can I cook? | Recipe | Dark mode |
+| Receipt scanning | What can I cook? | Recipe | Indian recipe |
 |---|---|---|---|
-| ![Receipt scan](docs/screenshots/receipt-scan.png) | ![Recipes](docs/screenshots/recipes.png) | ![Recipe](docs/screenshots/recipe.png) | ![Dark mode](docs/screenshots/home-dark.png) |
-| A photo of a receipt read on the device, with the discount applied and the total matching | Recipes ranked by how much you already have, with expiring food first | What you have, what's missing (one tap adds it to your list), and the method | Every screen has a designed dark theme, not an inverted one |
+| ![Receipt scan](docs/screenshots/receipt-scan.png) | ![Recipes](docs/screenshots/recipes.png) | ![Recipe](docs/screenshots/recipe.png) | ![Indian recipe](docs/screenshots/indian-recipe.png) |
+| A photo of a receipt read on the device, with the discount applied and the total matching | Recipes ranked by how much you already have, with expiring food first, filtered by All, Indian or Vegetarian | What you have, what's missing (one tap adds it to your list), and the method | One of the 45 built-in Indian recipes, with spices listed separately as "from your spice box" |
+
+| Swipe to delete | Delete at zero | Settings | Dark mode |
+|---|---|---|---|
+| ![Swipe to delete](docs/screenshots/swipe-delete.png) | ![Delete at zero](docs/screenshots/delete-at-zero.png) | ![Settings](docs/screenshots/settings.png) | ![Dark mode](docs/screenshots/home-dark.png) |
+| Swipe a row left to reveal Delete, or all the way to delete it, with undo | When an item reaches 0, its minus button becomes a delete button | Currency, monthly budget, CSV export and keyboard shortcuts | Every screen has a designed dark theme, not an inverted one |
 
 Screenshots use sample data. Recipe photos are from [TheMealDB](https://www.themealdb.com).
 
