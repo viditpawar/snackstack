@@ -6,7 +6,7 @@ A small web app for tracking groceries:
 - **Pantry**: what you have at home, with quantities, categories and expiry dates. Items expiring soon are highlighted.
 - **Spending**: what you paid, with a monthly total and a per-store breakdown.
 
-Built with React + Vite, [Supabase](https://supabase.com) (database and login), and [Cloudflare Pages](https://pages.cloudflare.com) (hosting). All three have free tiers that are enough for personal use.
+Built with React + Vite, [Supabase](https://supabase.com) (database and login), and [Cloudflare Workers](https://workers.cloudflare.com) (hosting). All three have free tiers that are enough for personal use.
 
 ## Run your own copy
 
@@ -32,22 +32,23 @@ npm run dev
 
 Open the URL it prints (usually http://localhost:5173) and create an account. Supabase sends a confirmation email by default. To skip it while testing, turn off **Confirm email** under **Authentication**, then **Sign In / Providers**, then **Email**.
 
-### 3. Deploy to Cloudflare Pages
+### 3. Deploy to Cloudflare
+
+The app is served as a static site from a Cloudflare Worker, configured in [`wrangler.jsonc`](wrangler.jsonc).
 
 1. Push this repo to GitHub.
-2. In the Cloudflare dashboard, go to **Workers & Pages**, then **Create**, then **Pages**, then **Connect to Git**, and pick the repo.
+2. In the Cloudflare dashboard, go to **Workers & Pages**, then **Create**, then **Import a repository**, and pick the repo.
 3. Build settings:
-   - Framework preset: **Vite** (or **None**)
    - Build command: `npm run build`
-   - Build output directory: `dist`
-4. Under **Environment variables**, add `VITE_SUPABASE_URL` and `VITE_SUPABASE_KEY` with the same values as in your `.env`.
+   - Deploy command: `npx wrangler deploy`
+4. Under **Build variables**, add `VITE_SUPABASE_URL` and `VITE_SUPABASE_KEY` with the same values as in your `.env`.
 5. Deploy. Every push to `main` redeploys automatically.
 
 ### 4. Point Supabase at your live site
 
 In Supabase, go to **Authentication**, then **URL Configuration**:
 
-- Set **Site URL** to your Cloudflare URL (for example `https://snackstack.pages.dev`).
+- Set **Site URL** to your Cloudflare URL (for example `https://snackstack.your-subdomain.workers.dev`).
 - Add the same URL, plus `http://localhost:5173`, to **Redirect URLs**.
 
 Without this step, confirmation emails link to the wrong place.
