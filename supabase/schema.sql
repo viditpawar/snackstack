@@ -1,5 +1,6 @@
 -- SnackStack database schema.
 -- Run this once in the Supabase dashboard: SQL Editor -> New query -> paste -> Run.
+-- Then run each file in supabase/migrations/ in order.
 --
 -- Every table has a user_id column and Row Level Security (RLS) policies so
 -- each signed-in user can only see and change their own rows. The browser key

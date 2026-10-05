@@ -62,12 +62,29 @@ export function expiryInfo(s: string): { text: string; tone: Tone; days: number 
   return { text: `Until ${formatDate(s)}`, tone: 'ok', days }
 }
 
+// The user's currency, set from their settings when the app loads.
+let currency = 'USD'
+
+export function setCurrencyCode(code: string) {
+  currency = code
+}
+
 export function formatMoney(n: number, compact = false): string {
   return n.toLocaleString(undefined, {
     style: 'currency',
-    currency: 'USD',
+    currency,
+    currencyDisplay: 'narrowSymbol',
     ...(compact ? { notation: 'compact', maximumFractionDigits: n >= 1000 ? 1 : 0 } : {}),
   })
+}
+
+export function currencySymbol(): string {
+  return (0).toLocaleString(undefined, { style: 'currency', currency, currencyDisplay: 'narrowSymbol', maximumFractionDigits: 0 }).replace(/[\d\s.,]/g, '')
+}
+
+export function daysInMonth(key: string): number {
+  const [y, m] = key.split('-').map(Number)
+  return new Date(y, m, 0).getDate()
 }
 
 export function formatQty(quantity: number, unit: string | null): string {

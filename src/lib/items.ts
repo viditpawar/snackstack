@@ -78,3 +78,36 @@ export function recentStores(purchases: Purchase[]): string[] {
   }
   return [...latest.entries()].sort((a, b) => b[1].localeCompare(a[1])).map(([s]) => s)
 }
+
+// "milk, eggs, bread" or a pasted multi-line list -> one entry per item.
+// Spoken input also splits on "and", since you can't say a comma.
+export function splitItems(text: string, spoken = false): string[] {
+  return text
+    .split(spoken ? /\n|,|;|\band\b/i : /\n|,|;/)
+    .map((s) => s.replace(/^[\s\-•*·]+|\s+$/g, ''))
+    .filter(Boolean)
+}
+
+export function isLow(p: PantryItem): boolean {
+  return p.quantity === 0 || (p.min_quantity !== null && p.quantity < p.min_quantity)
+}
+
+// How many to buy to get back to the level you like to keep.
+export function restockQuantity(p: PantryItem): number {
+  return p.min_quantity ? Math.max(1, Math.ceil(p.min_quantity - p.quantity)) : 1
+}
+
+export function priceStats(purchases: Purchase[], name: string) {
+  const key = normalizeName(name)
+  const history = purchases.filter((p) => normalizeName(p.name) === key).sort((a, b) => b.purchased_on.localeCompare(a.purchased_on))
+  if (history.length === 0) return null
+  const prices = history.map((p) => p.price)
+  const cheapest = history.reduce((best, p) => (p.price < best.price ? p : best))
+  return {
+    history,
+    last: history[0],
+    average: prices.reduce((s, p) => s + p, 0) / prices.length,
+    cheapest,
+    total: prices.reduce((s, p) => s + p, 0),
+  }
+}

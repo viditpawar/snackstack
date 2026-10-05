@@ -1,10 +1,12 @@
 # SnackStack
 
-A small web app for tracking groceries:
+A web app for tracking groceries, built to feel like a native phone app:
 
-- **Shopping list**: add items, then mark them bought. Marking an item bought can record the price and move it into your pantry.
-- **Pantry**: what you have at home, with quantities, categories and expiry dates. Items expiring soon are highlighted.
-- **Spending**: what you paid, with a monthly total and a per-store breakdown.
+- **Shopping list**: quick-add that understands "2 kg rice", bulk add ("milk, eggs, bread"), voice input, barcode scanning, notes, grouping by aisle, sharing, and suggestions for items running low or bought before.
+- **Check out**: tap items into your cart at the store, then log prices and expiry dates in one step. Everything moves into your pantry.
+- **Pantry**: expiry tracking, low-stock levels ("keep at least 2"), fridge/freezer/cupboard locations, search and filters, and price history.
+- **Spending**: monthly totals, a 6-month chart, a budget with a month-end projection, breakdown by store or aisle, top items, and food-waste tracking.
+- **Extras**: your choice of currency, CSV export, keyboard shortcuts, light and dark themes, undo on deletes, and installing it to your home screen.
 
 Built with React + Vite, [Supabase](https://supabase.com) (database and login), and [Cloudflare Workers](https://workers.cloudflare.com) (hosting). All three have free tiers that are enough for personal use.
 
@@ -13,7 +15,7 @@ Built with React + Vite, [Supabase](https://supabase.com) (database and login), 
 ### 1. Set up Supabase
 
 1. Create a free project at [supabase.com](https://supabase.com).
-2. Open **SQL Editor**, then **New query**. Paste the contents of [`supabase/schema.sql`](supabase/schema.sql) and click **Run**. This creates the tables and the security rules that keep each user's data private.
+2. Open **SQL Editor**, then **New query**. Paste the contents of [`supabase/schema.sql`](supabase/schema.sql) and click **Run**. Then do the same for each file in [`supabase/migrations/`](supabase/migrations/), in order. This creates the tables and the security rules that keep each user's data private.
 3. Open **Project Settings**, then **API**, and copy:
    - the **Project URL**
    - the **publishable** key (labelled **anon** on older projects)
