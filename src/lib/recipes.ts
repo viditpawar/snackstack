@@ -343,6 +343,17 @@ export function rankMatches(matches: RecipeMatch[]): RecipeMatch[] {
 }
 
 const MAX_INGREDIENTS = 6
+
+// Which pantry items to cook with first: anything about to expire, then what you added most recently.
+export function cookingOrder(stocked: PantryItem[]): PantryItem[] {
+  return [...stocked].sort((a, b) => {
+    const sa = isSoon(a)
+    const sb = isSoon(b)
+    if (sa !== sb) return sa ? -1 : 1
+    if (sa && sb) return a.expires_on!.localeCompare(b.expires_on!)
+    return b.created_at.localeCompare(a.created_at)
+  })
+}
 const MAX_CANDIDATES = 30
 const MAX_RECIPES = 24
 
@@ -354,9 +365,9 @@ function dailyJitter(id: string): number {
 }
 
 // Recipes from TheMealDB that use what's in the pantry.
-async function dbMealsFor(stocked: PantryItem[], focus: string | null): Promise<{ meals: Meal[]; searchedWith: PantryItem[] }> {
+async function dbMealsFor(stocked: PantryItem[], focus: string | null): Promise<Meal[]> {
   const names = await loadIngredientNames()
-  const ordered = [...stocked].sort((a, b) => (a.expires_on ?? '9999').localeCompare(b.expires_on ?? '9999'))
+  const ordered = cookingOrder(stocked)
   const picks: { item: PantryItem; ingredient: string }[] = []
   for (const item of focus ? ordered.filter((p) => p.id === focus) : ordered) {
     const ingredient = toDbIngredient(item.name, names)
@@ -371,8 +382,7 @@ async function dbMealsFor(stocked: PantryItem[], focus: string | null): Promise<
     for (const m of r.value) votes.set(m.id, (votes.get(m.id) ?? 0) + 10 + (isSoon(picks[i].item) ? 5 : 0) + dailyJitter(m.id) * 4)
   })
   const top = [...votes.entries()].sort((a, b) => b[1] - a[1]).slice(0, MAX_CANDIDATES)
-  const meals = (await Promise.allSettled(top.map(([id]) => mealById(id)))).flatMap((m) => (m.status === 'fulfilled' ? [m.value] : []))
-  return { meals, searchedWith: picks.map((p) => p.item) }
+  return (await Promise.allSettled(top.map(([id]) => mealById(id)))).flatMap((m) => (m.status === 'fulfilled' ? [m.value] : []))
 }
 
 export type Suggestions =
@@ -384,7 +394,7 @@ export type Suggestions =
 // What can I cook with what's in the pantry right now?
 export function useRecipeSuggestions(pantry: PantryItem[], focus: string | null, cuisine: Cuisine): Suggestions {
   const stocked = pantry.filter((p) => p.quantity > 0)
-  const key = stocked.map((p) => `${p.name}|${p.expires_on}`).sort().join(',') + `#${focus ?? ''}#${cuisine}`
+  const key = stocked.map((p) => `${p.id}|${p.name}|${p.expires_on}`).sort().join(',') + `#${focus ?? ''}#${cuisine}`
   const [state, setState] = useState<Suggestions>({ status: 'loading' })
 
   useEffect(() => {
@@ -392,15 +402,12 @@ export function useRecipeSuggestions(pantry: PantryItem[], focus: string | null,
     setState({ status: 'loading' })
     ;(async () => {
       let remote: Meal[] = []
-      let searchedWith = focus ? stocked.filter((p) => p.id === focus) : stocked.slice(0, MAX_INGREDIENTS)
+      // Every recipe is matched against the whole pantry, so show all of it.
+      const searchedWith = cookingOrder(stocked)
       let remoteFailed = false
       try {
         if (cuisine === 'indian') remote = await dbIndianMeals()
-        else if (stocked.length) {
-          const found = await dbMealsFor(stocked, focus)
-          remote = found.meals
-          if (found.searchedWith.length) searchedWith = found.searchedWith
-        }
+        else if (stocked.length) remote = await dbMealsFor(stocked, focus)
       } catch {
         remoteFailed = true
       }

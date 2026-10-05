@@ -3363,3 +3363,8 @@ kbd {
     font-size: max(16px, 1em);
   }
 }
+
+.chip-more {
+  border-style: dashed;
+  color: var(--muted);
+}

@@ -6,6 +6,8 @@ import { normalizeName } from '../lib/items'
 import { Sheet } from '../ui/Sheet'
 import { Empty, ExpiryPill, ItemIcon, PageHead } from '../ui/bits'
 
+const CHIP_LIMIT = 10
+
 const CUISINES: [Cuisine, string][] = [
   ['all', 'All'],
   ['indian', '🍛 Indian'],
@@ -17,6 +19,7 @@ export default function CookScreen() {
   // Always opens on All; Indian and Vegetarian are filters you pick for this visit.
   const [cuisine, setCuisine] = useState<Cuisine>('all')
   const [focus, setFocus] = useState<string | null>(null)
+  const [allChips, setAllChips] = useState(false)
   const [open, setOpen] = useState<RecipeMatch | null>(null)
   const [query, setQuery] = useState('')
   const [search, setSearch] = useState<{ query: string; status: 'loading' | 'error' | 'ready'; recipes: RecipeMatch[] } | null>(null)
@@ -101,11 +104,18 @@ export default function CookScreen() {
                   {focusItem.name} <X size={14} />
                 </button>
               ) : (
-                suggestions.searchedWith.map((p) => (
-                  <button key={p.id} className="chip" onClick={() => setFocus(p.id)} title={`Only recipes with ${p.name}`}>
-                    {p.name}
-                  </button>
-                ))
+                <>
+                  {(allChips ? suggestions.searchedWith : suggestions.searchedWith.slice(0, CHIP_LIMIT)).map((p) => (
+                    <button key={p.id} className="chip" onClick={() => setFocus(p.id)} title={`Only recipes with ${p.name}`}>
+                      {p.name}
+                    </button>
+                  ))}
+                  {suggestions.searchedWith.length > CHIP_LIMIT && (
+                    <button className="chip chip-more" onClick={() => setAllChips(!allChips)}>
+                      {allChips ? 'Show less' : `+${suggestions.searchedWith.length - CHIP_LIMIT} more`}
+                    </button>
+                  )}
+                </>
               )}
             </div>
           )}
