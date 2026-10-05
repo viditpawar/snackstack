@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type FormEvent } from 'react'
+import { useMemo, useState, type FormEvent } from 'react'
 import { Check, Clock, ExternalLink, Leaf, ListPlus, PlayCircle, RotateCw, Search, Sparkles, X } from 'lucide-react'
 import { useStore } from '../store'
 import { matchMeal, rankMatches, searchMeals, steps, useRecipeSuggestions, type Cuisine, type Meal, type RecipeMatch } from '../lib/recipes'
@@ -6,39 +6,22 @@ import { normalizeName } from '../lib/items'
 import { Sheet } from '../ui/Sheet'
 import { Empty, ExpiryPill, ItemIcon, PageHead } from '../ui/bits'
 
-const CUISINE_KEY = 'snackstack.cuisine'
 const CUISINES: [Cuisine, string][] = [
   ['all', 'All'],
   ['indian', '🍛 Indian'],
   ['veg', '🥗 Vegetarian'],
 ]
 
-function loadCuisine(): Cuisine {
-  try {
-    const v = localStorage.getItem(CUISINE_KEY)
-    return v === 'indian' || v === 'veg' ? v : 'all'
-  } catch {
-    return 'all'
-  }
-}
-
 export default function CookScreen() {
   const { pantry } = useStore()
-  const [cuisine, setCuisine] = useState<Cuisine>(loadCuisine)
+  // Always opens on All; Indian and Vegetarian are filters you pick for this visit.
+  const [cuisine, setCuisine] = useState<Cuisine>('all')
   const [focus, setFocus] = useState<string | null>(null)
   const [open, setOpen] = useState<RecipeMatch | null>(null)
   const [query, setQuery] = useState('')
   const [search, setSearch] = useState<{ query: string; status: 'loading' | 'error' | 'ready'; recipes: RecipeMatch[] } | null>(null)
   const suggestions = useRecipeSuggestions(pantry, focus, cuisine)
   const stocked = useMemo(() => pantry.filter((p) => p.quantity > 0), [pantry])
-
-  useEffect(() => {
-    try {
-      localStorage.setItem(CUISINE_KEY, cuisine)
-    } catch {
-      // Preference just won't stick.
-    }
-  }, [cuisine])
 
   async function runSearch(q: string, c: Cuisine) {
     setSearch({ query: q, status: 'loading', recipes: [] })
